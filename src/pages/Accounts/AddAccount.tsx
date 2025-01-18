@@ -1,0 +1,97 @@
+"use client";
+
+import React from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import Title from "@/components/ui/title";
+
+// Define the schema for form validation
+const FormSchema = z.object({
+  accountName: z.string().min(2, {
+    message: "Account name must be at least 2 characters.",
+  }),
+  accountAmount: z
+    .number({ invalid_type_error: "Account amount must be a number." })
+    .positive("Account amount must be a positive number.")
+    .or(z.string().regex(/^\d+$/, "Account amount must be a valid number.")),
+});
+
+const AddAccount: React.FC = () => {
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      accountName: "",
+      accountAmount: "",
+    },
+  });
+
+  function onSubmit(data: z.infer<typeof FormSchema>) {
+    
+  }
+
+  return (
+    <div className="flex flex-col space-y-6">
+      <Title name="Add Account" />
+
+      <Form {...form} >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-12">
+          {/* Account Name Field */}
+          <FormField
+            control={form.control}
+            name="accountName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Account Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter account name" {...field} />
+                </FormControl>
+                
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Account Amount Field */}
+          <FormField
+            control={form.control}
+            name="accountAmount"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Account Amount</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Enter account amount"
+                    type="text"
+                    {...field}
+                  />
+                </FormControl>
+              
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Submit Button */}
+          <Button type="submit" variant={'default'} className='m-4 py-6 w-[90vw]'>
+            Add Account
+          </Button>
+        </form>
+      </Form>
+    </div>
+  );
+};
+
+export default AddAccount;

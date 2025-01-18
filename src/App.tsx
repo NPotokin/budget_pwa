@@ -8,6 +8,9 @@ import Accounts from './pages/Accounts/Accounts'
 import Categories from './pages/Categories/Categories'
 import {Login} from './pages/Entry/Login'
 import {Register} from './pages/Entry/Register'
+import AddAccount from './pages/Accounts/AddAccount';
+import AccountOverview from './pages/Accounts/AccountOverview';
+import CategoryAdd from './pages/Categories/CategoryAdd';
 
 const App= () => {
   
@@ -26,8 +29,13 @@ const App= () => {
                     <Route path="settings" element={<Settings />} />
                     <Route path="statistics" element={<Statistics />} />
                     <Route index element={<Transactions />} />
+
                     <Route path="accounts" element={<Accounts />} />
+                    <Route path='accounts/add' element={<AddAccount/>} />
+                    <Route path='accounts/account' element={<AccountOverview/>} />
+
                     <Route path="categories" element={<Categories />} />
+                    <Route path="categories/add" element={<CategoryAdd/>} />
                 </Route>
             </Routes>
         </Router>
