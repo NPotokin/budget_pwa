@@ -18,9 +18,97 @@ const Transactions: React.FC =  () => {
     <div className='flex-flex-col'>
       <Title name='Transactions'/>
 
-      <div className='flex flex-col space-y-8'>
+      <div className='flex flex-col space-y-4'>
 
-        <div className='flex justify-evenly m-4 pt-12'>
+        <div className='flex flex-col mx-4'>
+          <h2 className="text-primary text-xl">Latest transactions</h2>
+          <div className="border border-primary rounded max-h-[300px] overflow-y-auto">
+            {/* Header Row */}
+            <div className="flex">
+              <div className="flex-1 text-md text-start px-2 py-1 border-r border-primary">Date</div>
+              <div className="flex-1 text-md text-start px-2 py-1 border-r border-primary">From</div>
+              <div className="flex-1 text-md text-start px-2 py-1 border-r border-primary">To</div>
+              <div className="flex-1 text-md text-start px-2 py-1">Amount</div>
+            </div>
+            {/* Data Row */}
+            <div className="flex border-t border-primary">
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">Mon, Jan 12</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">T-bank main</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">Dinig out</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 font-mono">3,445</div>
+            </div>
+            <div className="flex border-t border-primary">
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">Mon, Jan 12</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">T-bank main</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">Dinig out</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 font-mono">3,445</div>
+            </div>
+            <div className="flex border-t border-primary">
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">Mon, Jan 12</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">T-bank main</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">Dinig out</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 font-mono">3,445</div>
+            </div>
+            <div className="flex border-t border-primary">
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">Mon, Jan 12</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">T-bank main</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">Dinig out</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 font-mono">3,445</div>
+            </div>
+            <div className="flex border-t border-primary">
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">Mon, Jan 12</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">T-bank main</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">Dinig out</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 font-mono">3,445</div>
+            </div>
+            <div className="flex border-t border-primary">
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">Mon, Jan 12</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">T-bank main</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">Dinig out</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 font-mono">3,445</div>
+            </div>
+            <div className="flex border-t border-primary">
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">Mon, Jan 12</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">T-bank main</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">Dinig out</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 font-mono">3,445</div>
+            </div>
+            <div className="flex border-t border-primary">
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">Mon, Jan 12</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">T-bank main</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">Dinig out</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 font-mono">3,445</div>
+            </div>
+            <div className="flex border-t border-primary">
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">Mon, Jan 12</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">T-bank main</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">Dinig out</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 font-mono">3,445</div>
+            </div>
+            <div className="flex border-t border-primary">
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">Mon, Jan 12</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">T-bank main</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">Dinig out</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 font-mono">3,445</div>
+            </div>
+            <div className="flex border-t border-primary">
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">Mon, Jan 12</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">T-bank main</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">Dinig out</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 font-mono">3,445</div>
+            </div>
+            <div className="flex border-t border-primary">
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">Mon, Jan 12</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">T-bank main</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 border-r border-primary">Dinig out</div>
+              <div className="flex-1 text-sm text-start px-2 py-1 font-mono">3,445</div>
+            </div>
+          </div>
+
+
+        </div>
+
+        <div className='flex justify-evenly m-4 pt-2'>
           <button className='w-20 h-20 rounded-3xl bg-green-800 items-center justify-center text-secondary flex'>
             <Plus size={40} />
           </button>

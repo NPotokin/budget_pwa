@@ -1,74 +1,98 @@
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../../supabaseClient';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useNavigate } from "react-router-dom"
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
-export function Login({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<"div">) {
+export function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-    const navigate = useNavigate()
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError(null);
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      setError(error.message);
+    } else {
+      navigate('/');
+    }
+  };
 
   return (
-    <div className={cn("flex flex-col justify-center  items-center min-h-screen  gap-6", className)} {...props}>
-      <Card>
+    <div className='mx-4 h-screen my-auto flex flex-col justify-center'>
+      <Card> 
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account
-          </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
-            <div className="flex flex-col gap-6">
+          <form onSubmit={handleLogin}>
+            <div className="flex flex-col gap-6 items-center">
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className='ml-4'>Email</Label>
                 <Input
+                  className='max-w-[78vw]'
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
               <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  <a
-                    href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </a>
-                </div>
-                <Input id="password" type="password" required />
+                <Label htmlFor="password" className='ml-4'>Password</Label>
+                <Input
+                  className='max-w-[78vw]'
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
               </div>
-              <Button type="submit" className="w-full" onClick={() => navigate('/')}>
+              {error && <p className="text-red-800 text-sm">{error}</p>}
+              <Button type="submit" className="w-[78vw]">
                 Login
-              </Button>
-              <Button variant="outline" className="w-full">
-                Login with Google
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{" "}
-              <Button 
-              variant="link" className="underline underline-offset-4"
-              onClick={()=> navigate('/register')}>
+              Don&apos;t have an account?{' '}
+              <Button
+                variant="link"
+                className="underline underline-offset-4"
+                onClick={() => navigate('/registration')}
+              >
                 Sign up
+              </Button>
+            </div>
+            <div className='flex justify-center items-center'>
+
+              <Button
+                variant="link"
+                className="cursor-pointer mx-auto"
+                onClick={() => navigate('/recover')}
+              >
+                Forgot Password?
               </Button>
             </div>
           </form>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

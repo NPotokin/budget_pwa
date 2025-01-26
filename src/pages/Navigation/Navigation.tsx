@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { BadgeRussianRubleIcon, ChartPieIcon, NotebookTabsIcon, Settings, Wallet } from 'lucide-react';
+import { BadgeRussianRubleIcon, ChartPieIcon, NotebookTabsIcon, User, Wallet } from 'lucide-react';
 import React from 'react'
 import { Outlet, useNavigate } from 'react-router-dom';
 
@@ -13,7 +13,7 @@ const Navigation: React.FC = () => {
         </main>
       <footer className="flex justify-around pb-5 items-center">
          <Button variant="default" size="icon" onClick={() => navigate('/settings')}>
-            <Settings/>
+            <User/>
          </Button>
          <Button variant="default" size="icon" onClick={() => navigate('/accounts')}>
             <Wallet />

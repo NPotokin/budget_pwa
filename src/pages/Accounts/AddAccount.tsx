@@ -1,6 +1,5 @@
-"use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -9,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -17,13 +15,17 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Title from "@/components/ui/title";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store/store";
+import { createAccount } from "@/store/accounts/accounts.Thunk";
+import { supabase } from "@/supabaseClient";
 
 // Define the schema for form validation
 const FormSchema = z.object({
-  accountName: z.string().min(2, {
+  name: z.string().min(2, {
     message: "Account name must be at least 2 characters.",
   }),
-  accountAmount: z
+  balance: z
     .number({ invalid_type_error: "Account amount must be a number." })
     .positive("Account amount must be a positive number.")
     .or(z.string().regex(/^\d+$/, "Account amount must be a valid number.")),
@@ -33,14 +35,38 @@ const AddAccount: React.FC = () => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      accountName: "",
-      accountAmount: "",
+      name: "",
+      balance: 0,
     },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    
-  }
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+      }
+    };
+
+    fetchUser();
+  }, []);
+  
+
+  const dispatch = useDispatch<AppDispatch>()
+
+  const onSubmit = (data: z.infer<typeof FormSchema>) => {
+    if (userId) {
+      const accountData = {
+        ...data,
+        user_id: userId,
+      };
+      dispatch(createAccount(accountData));
+    } else {
+      console.error("User ID is not available.");
+    }
+  };
 
   return (
     <div className="flex flex-col space-y-6">
@@ -51,7 +77,7 @@ const AddAccount: React.FC = () => {
           {/* Account Name Field */}
           <FormField
             control={form.control}
-            name="accountName"
+            name="name"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Account Name</FormLabel>
@@ -67,7 +93,7 @@ const AddAccount: React.FC = () => {
           {/* Account Amount Field */}
           <FormField
             control={form.control}
-            name="accountAmount"
+            name="balance"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Account Amount</FormLabel>

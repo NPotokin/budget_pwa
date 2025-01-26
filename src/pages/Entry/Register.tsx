@@ -1,52 +1,151 @@
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../../supabaseClient';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useNavigate } from "react-router-dom"
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
-export function Register({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<"div">) {
-  const navigate = useNavigate()
+export const Registration = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [repeatPassword, setRepeatPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [error, setError] = useState(null);
+  const [passwordError, setPasswordError] = useState(null); 
+  const navigate = useNavigate();
+
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setPasswordError(null); 
+
+    // Проверка совпадения паролей
+    if (password !== repeatPassword) {
+      setPasswordError('Passwords do not match');
+      return;
+    }
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+        },
+      },
+    });
+
+    if (error) {
+      setError(error.message);
+    } else {
+      navigate('/');
+    }
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+    if (repeatPassword && e.target.value !== repeatPassword) {
+      setPasswordError('Passwords do not match');
+    } else {
+      setPasswordError(null); 
+    }
+  };
+
+  const handleRepeatPasswordChange = (e) => {
+    setRepeatPassword(e.target.value);
+    if (password && e.target.value !== password) {
+      setPasswordError('Passwords do not match');
+    } else {
+      setPasswordError(null); 
+    }
+  };
+
   return (
-    <div className={cn("flex flex-col justify-center  items-center min-h-screen  gap-6", className)} {...props}>
+    <div className='mx-4 h-screen my-auto flex flex-col justify-center'>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Registration</CardTitle>
+          <CardTitle className="text-2xl">Sign Up</CardTitle>
         </CardHeader>
         <CardContent>
-          <form>
-            <div className="flex flex-col gap-6">
+          <form onSubmit={handleSignUp}>
+            <div className="flex flex-col gap-6 items-center">
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="firstName" className='ml-4'>Your Name</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
+                  className='max-w-[78vw]'
+                  id="firstName"
+                  type="text"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
                   required
                 />
               </div>
               <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                </div>
-                <Input id="password" type="password" required />
+                <Label htmlFor="lastName" className='ml-4'>Your Last Name</Label>
+                <Input
+                  className='max-w-[78vw]'
+                  id="lastName"
+                  type="text"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  required
+                />
               </div>
-              <Button type="submit" className="w-full">
-                Sign up
+              <div className="grid gap-2">
+                <Label htmlFor="email" className='ml-4'>Email</Label>
+                <Input
+                  className='max-w-[78vw]'
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="password" className='ml-4'>Password</Label>
+                <Input
+                  className='max-w-[78vw]'
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={handlePasswordChange} 
+                  required
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="repeatPassword" className='ml-4'>Repeat Password</Label>
+                <Input
+                  className='max-w-[78vw]'
+                  id="repeatPassword"
+                  type="password"
+                  value={repeatPassword}
+                  onChange={handleRepeatPasswordChange} 
+                  required
+                />
+              </div>
+              {passwordError && <p className="text-red-800 text-sm">{passwordError}</p>}
+              {error && <p className="text-red-800 text-sm">{error}</p>}
+              <Button type="submit" className="w-[78vw]" disabled={passwordError}>
+                Sign Up
               </Button>
-        
             </div>
             <div className="mt-4 text-center text-sm">
-              Already have an account with us? 
-              <Button variant={'link'} className="underline underline-offset-4" onClick={() => navigate('/entry')}>
+              Already have an account?{' '}
+              <Button
+                variant="link"
+                className="underline underline-offset-4"
+                onClick={() => navigate('/login')}
+              >
                 Login
               </Button>
             </div>
@@ -54,5 +153,5 @@ export function Register({
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

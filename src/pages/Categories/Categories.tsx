@@ -9,8 +9,8 @@ const Categories = () => {
   return (
     <div className='flex flex-col'>
       <Title name='Categories'/>
-      <div className="fkex fkex-col overflow-auto h-[65vh]">
-      <Card className='m-4'>
+      <div className="overflow-auto h-[65vh] space-y-1">
+      <Card className='mx-4'>
         <CardHeader>
           <div className="flex justify-between">
             <div>

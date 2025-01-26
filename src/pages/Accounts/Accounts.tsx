@@ -1,72 +1,61 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Title from '@/components/ui/title'
-import { RussianRuble } from 'lucide-react'
-import React from 'react'
+import { useTypedSelector } from '@/hooks/useTypedSelector'
+import { fetchAccounts } from '@/store/accounts/accounts.Thunk'
+import { AppDispatch } from '@/store/store'
+import React, { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 const Accounts = () => {
+
+  const accounts = useTypedSelector(state => state.accounts.list)
+
+  const dispatch = useDispatch<AppDispatch>()
+  
+  useEffect(() => {
+    dispatch(fetchAccounts())
+  }, [dispatch] )
 
   const navigate = useNavigate()
   return (
     <div className='flex flex-col'>
       <Title name='Accounts'/>
-      <div className='overflow-y-auto h-[65vh]'>
-
-      <Card className='mx-4 my-1' onClick={() => navigate('/accounts/account')}>
-        <CardHeader >
-          <CardTitle className='text-xl font-thin'>T-bank current</CardTitle>
-          <CardDescription className='flex items-center'>
-            <p className='text-3xl font-mono'>97.000</p>
-            <RussianRuble size={24}/>
-          </CardDescription>
-        </CardHeader>
-      </Card>
-      <Card className='mx-4 my-1'>
-        <CardHeader >
-          <CardTitle className='text-xl font-thin'>T-bank current</CardTitle>
-          <CardDescription className='flex items-center'>
-            <p className='text-3xl font-mono'>97.000</p>
-            <RussianRuble size={24}/>
-          </CardDescription>
-        </CardHeader>
-      </Card>
-      <Card className='mx-4 my-1'>
-        <CardHeader >
-          <CardTitle className='text-xl font-thin'>T-bank current</CardTitle>
-          <CardDescription className='flex items-center'>
-            <p className='text-3xl font-mono'>97.000</p>
-            <RussianRuble size={24}/>
-          </CardDescription>
-        </CardHeader>
-      </Card>
-      <Card className='mx-4 my-1'>
-        <CardHeader >
-          <CardTitle className='text-xl font-thin'>T-bank current</CardTitle>
-          <CardDescription className='flex items-center'>
-            <p className='text-3xl font-mono'>97.000</p>
-            <RussianRuble size={24}/>
-          </CardDescription>
-        </CardHeader>
-      </Card>
-      <Card className='mx-4 my-1'>
-        <CardHeader >
-          <CardTitle className='text-xl font-thin'>T-bank current</CardTitle>
-          <CardDescription className='flex items-center'>
-            <p className='text-3xl font-mono'>97.000</p>
-            <RussianRuble size={24}/>
-          </CardDescription>
-        </CardHeader>
-      </Card>
-      <Card className='mx-4 my-1'>
-        <CardHeader >
-          <CardTitle className='text-xl font-thin'>T-bank current</CardTitle>
-          <CardDescription className='flex items-center'>
-            <p className='text-3xl font-mono'>97.000</p>
-            <RussianRuble size={24}/>
-          </CardDescription>
-        </CardHeader>
-      </Card>
+      <div className='overflow-y-auto h-[65vh] space-y-1'>
+        {accounts.map(account => 
+        <Card className='mx-4' onClick={() => navigate('/accounts/account')}>
+          <CardHeader>
+            <div className="flex justify-between">
+              <div>
+                <CardTitle>{account.name}</CardTitle>
+                <CardDescription>
+                <div className="flex">
+                  <p className='text-primary pr-2'>Amount:</p>
+                  <p className='font-mono'>{account.balance}</p>
+                </div>
+                </CardDescription>
+              </div>
+              <div className="flex flex-col">
+                <CardDescription>
+                <div className="flex">
+                  <p className='text-primary pr-2'>Spendings:</p>
+                  <p className='font-mono text-red-800'>8,000000</p>
+                </div>
+                </CardDescription>
+                <CardDescription>
+                <div className="flex">
+                  <p className='text-primary pr-2'>Earnings:</p>
+                  <p className='font-mono text-green-800'>8,000</p>
+                </div>
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+        </Card>
+        )}
+        
+      
       </div>
 
 
