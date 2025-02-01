@@ -1,13 +1,13 @@
 import { Button } from '@/components/ui/button'
 import Title from '@/components/ui/title'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../supabaseClient';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store/store';
 import { fetchProfile } from '@/store/profile/profile.Thunk';
 import { useTypedSelector } from '@/hooks/useTypedSelector';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 
 
 const Profile = () => {

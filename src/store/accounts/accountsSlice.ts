@@ -1,7 +1,7 @@
 // accountsSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Account } from '../../types';
-import { fetchAccounts, createAccount, updateAccount } from './accounts.Thunk';
+import { fetchAccounts, createAccount, updateAccount, deleteAccount } from './accounts.Thunk';
 
 interface AccountsState {
   list: Account[];
@@ -33,6 +33,21 @@ const accountsSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch accounts';
       })
+
+      .addCase(deleteAccount.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteAccount.fulfilled, (state, action) => {
+        state.loading = false;
+        state.list = state.list.filter(account => account.id !== action.payload)
+      })
+      .addCase(deleteAccount.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to fetch accounts';
+      })
+
+
       .addCase(createAccount.fulfilled, (state, action: PayloadAction<Account>) => {
         state.list.push(action.payload);
       })

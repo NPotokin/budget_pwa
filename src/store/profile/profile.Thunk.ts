@@ -10,24 +10,4 @@ export const fetchProfile = createAsyncThunk(
     return {email, first_name, last_name}
 });
 
-// export const createAccount = createAsyncThunk<Account, Omit<Account, 'id'>>(
-//   'accounts/createAccount',
-//   async (account) => {
-//     const { data, error } = await supabase.from('accounts').insert([account]).single();
-//     if (error) throw error;
-//     return data as Account;
-//   }
-// );
 
-// export const updateAccount = createAsyncThunk<Account, Account>(
-//   'accounts/updateAccount',
-//   async (account) => {
-//     const { data, error } = await supabase
-//       .from('accounts')
-//       .update({ name: account.name, balance: account.balance })
-//       .eq('id', account.id)
-//       .single();
-//     if (error) throw error;
-//     return data as Account;
-//   }
-// );

@@ -14,6 +14,8 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import { Recovery } from './pages/Entry/Recovery';
 import { ChangePassword } from './pages/Entry/ChangePassword';
 import Profile from './pages/Profile/Profile';
+import CategoryOverview from './pages/Categories/CategoryOverview';
+import RecentTransactions from './pages/Transactions/RecentTransactions';
 
 const App= () => {
   
@@ -32,15 +34,19 @@ const App= () => {
                 <Route path='registration' element={<Registration />} />
                 <Route path="/" element={<ProtectedRoute><Navigation/></ProtectedRoute>}>
                     <Route path="profile" element={<Profile />} />
+
                     <Route path="statistics" element={<Statistics />} />
+
                     <Route index element={<Transactions />} />
+                    <Route path="transactions" element={<RecentTransactions />} />
 
                     <Route path="accounts" element={<Accounts />} />
                     <Route path='accounts/add' element={<AddAccount/>} />
-                    <Route path='accounts/account' element={<AccountOverview/>} />
+                    <Route path='accounts/:accountId' element={<AccountOverview/>} />
 
                     <Route path="categories" element={<Categories />} />
                     <Route path="categories/add" element={<CategoryAdd/>} />
+                    <Route path='categories/:categoryId' element={<CategoryOverview/>} />
                 </Route>
             </Routes>
         </Router>

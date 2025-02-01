@@ -19,8 +19,10 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { createAccount } from "@/store/accounts/accounts.Thunk";
 import { supabase } from "@/supabaseClient";
+import { useNavigate } from "react-router-dom";
 
-// Define the schema for form validation
+
+
 const FormSchema = z.object({
   name: z.string().min(2, {
     message: "Account name must be at least 2 characters.",
@@ -36,10 +38,11 @@ const AddAccount: React.FC = () => {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: "",
-      balance: 0,
+      balance: '',
     },
   });
 
+  const navigate = useNavigate()
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
@@ -63,6 +66,8 @@ const AddAccount: React.FC = () => {
         user_id: userId,
       };
       dispatch(createAccount(accountData));
+      navigate('/accounts')
+      
     } else {
       console.error("User ID is not available.");
     }
@@ -96,10 +101,10 @@ const AddAccount: React.FC = () => {
             name="balance"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Account Amount</FormLabel>
+                <FormLabel>Account Balance</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Enter account amount"
+                    placeholder="Enter account balance"
                     type="text"
                     {...field}
                   />

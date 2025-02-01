@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -17,16 +16,24 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Title from "@/components/ui/title";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store/store";
+import { addCategory } from "@/store/categories/categories.Thunk";
 
 // Define the schema for form validation
 const FormSchema = z.object({
   categoryName: z.string().min(2, {
-    message: "Account name must be at least 2 characters.",
+    message: 'Category name must be at least 2 characters.',
   }),
   categoryLimit: z
-    .number({ invalid_type_error: "Account amount must be a number." })
-    .positive("Account amount must be a positive number.")
-    .or(z.string().regex(/^\d+$/, "Account amount must be a valid number.")),
+    .number({ invalid_type_error: 'Category limit must be a number.' })
+    .positive('Category limit must be a positive number.')
+    .or(z.string().regex(/^\d+$/, 'Category limit must be a valid number.')),
+  categoryType: z.enum(['spending', 'income'], {
+    required_error: 'Category type is required.',
+  }),
 });
 
 const CategoryAdd: React.FC = () => {
@@ -35,11 +42,22 @@ const CategoryAdd: React.FC = () => {
     defaultValues: {
       categoryName: "",
       categoryLimit: "",
+      categoryType: 'spending'
     },
   });
 
+  const navigate = useNavigate()
+  const dispatch = useDispatch<AppDispatch>()
+
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    
+    console.log(data)
+    const category = {
+      name: data.categoryName,
+      category_limit: data.categoryLimit,
+      type: data.categoryType
+    }
+    dispatch(addCategory(category))
+    navigate('/categories')
   }
 
   return (
@@ -47,7 +65,7 @@ const CategoryAdd: React.FC = () => {
       <Title name="Add Category" />
 
       <Form {...form} >
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-12">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* Account Name Field */}
           <FormField
             control={form.control}
@@ -64,8 +82,31 @@ const CategoryAdd: React.FC = () => {
             )}
           />
 
+          {/* Category Type Field */}
+          <FormField 
+            control={form.control}
+            name="categoryType" 
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Category Type</FormLabel>
+                <FormControl>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <SelectTrigger className='mx-4 w-[90vw]'>
+                      <SelectValue placeholder="Select category type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="spending">Spendings</SelectItem>
+                      <SelectItem value="income">Earnings</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           {/* Account Amount Field */}
-          <FormField
+           <FormField
             control={form.control}
             name="categoryLimit"
             render={({ field }) => (
@@ -85,7 +126,8 @@ const CategoryAdd: React.FC = () => {
           />
 
           {/* Submit Button */}
-          <Button type="submit" variant={'default'} className='m-4 py-6 w-[90vw]'>
+          <Button 
+          type="submit" variant={'default'} className='m-4 py-6 w-[90vw]'>
             Add Category
           </Button>
         </form>

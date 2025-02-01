@@ -10,28 +10,30 @@ import { useNavigate } from 'react-router-dom'
 
 const Accounts = () => {
 
-  const accounts = useTypedSelector(state => state.accounts.list)
-
+  
   const dispatch = useDispatch<AppDispatch>()
+  const accounts = useTypedSelector(state => state.accounts.list)
   
   useEffect(() => {
     dispatch(fetchAccounts())
   }, [dispatch] )
+  
+
 
   const navigate = useNavigate()
   return (
     <div className='flex flex-col'>
       <Title name='Accounts'/>
-      <div className='overflow-y-auto h-[65vh] space-y-1'>
+      <div className='overflow-y-auto h-[64vh] space-y-1'>
         {accounts.map(account => 
-        <Card className='mx-4' onClick={() => navigate('/accounts/account')}>
+        <Card key={account.id} className='mx-4' onClick={() => navigate(`/accounts/${account.id}`)}>
           <CardHeader>
             <div className="flex justify-between">
               <div>
                 <CardTitle>{account.name}</CardTitle>
                 <CardDescription>
                 <div className="flex">
-                  <p className='text-primary pr-2'>Amount:</p>
+                  <p className='text-primary pr-2'>Balance:</p>
                   <p className='font-mono'>{account.balance}</p>
                 </div>
                 </CardDescription>
@@ -54,16 +56,11 @@ const Accounts = () => {
           </CardHeader>
         </Card>
         )}
-        
-      
       </div>
-
 
       <Button variant={'default'} className='m-4 py-6' onClick={() => navigate('/accounts/add')}>
         Add Account
       </Button>
-
-
     </div>
   )
 }

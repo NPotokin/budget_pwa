@@ -10,10 +10,10 @@ export const fetchAccounts = createAsyncThunk<Account[]>(
     return data as Account[];
 });
 
-export const createAccount = createAsyncThunk<Account, Omit<Account, 'id'>>(
+export const createAccount =  createAsyncThunk<Account>(
   'accounts/createAccount',
   async (account) => {
-    const { data, error } = await supabase.from('accounts').insert([account]).single();
+    const { data, error } = await supabase.from('accounts').insert([account]).select().single();
     if (error) throw error;
     return data as Account;
   }
@@ -29,5 +29,14 @@ export const updateAccount = createAsyncThunk<Account, Account>(
       .single();
     if (error) throw error;
     return data as Account;
+  }
+);
+
+export const deleteAccount = createAsyncThunk(
+  'accounts/deleteAccount',
+  async (accountId: string) => {
+    const { error } = await supabase.from('accounts').delete().eq('id', accountId);
+    if (error) throw error;
+    return accountId;
   }
 );
