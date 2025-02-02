@@ -3,12 +3,14 @@ import { configureStore } from '@reduxjs/toolkit';
 import accountsReducer from './accounts/accountsSlice';
 import profileReducer from './profile/profileSlice'
 import categoriesReducer from './categories/catgoriesSlice'
+import transactionsReducer from './transactions/transactionsSlice'
 
 const store = configureStore({
   reducer: {
     accounts: accountsReducer,
     profile: profileReducer,
     categories: categoriesReducer,
+    transactions: transactionsReducer,
     // other reducers...
   },
 });
