@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { fetchTransactions } from './transactions.Thunk';
+import { fetchAllTransactions } from './transactions.Thunk';
 
-interface Transaction {
+export interface Transaction {
   id: string,
   date: Date,
   amount: number,
@@ -29,15 +29,15 @@ const transactionsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchTransactions.pending, (state) => {
+      .addCase(fetchAllTransactions.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchTransactions.fulfilled, (state, action) => {
+      .addCase(fetchAllTransactions.fulfilled, (state, action) => {
         state.loading = false;
         state.transactions = action.payload
       })
-      .addCase(fetchTransactions.rejected, (state, action) => {
+      .addCase(fetchAllTransactions.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch transaction';
       })

@@ -1,10 +1,10 @@
 // accountsSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Account } from '../../types';
+import {Tables} from '../../../database.types'
 import { fetchAccounts, createAccount, updateAccount, deleteAccount } from './accounts.Thunk';
 
 interface AccountsState {
-  list: Account[];
+  list: Tables<'accounts'>[];
   loading: boolean;
   error: string | null;
 }
@@ -25,7 +25,7 @@ const accountsSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchAccounts.fulfilled, (state, action: PayloadAction<Account[]>) => {
+      .addCase(fetchAccounts.fulfilled, (state, action: PayloadAction<Tables<'accounts'>[]>) => {
         state.loading = false;
         state.list = action.payload;
       })
@@ -48,10 +48,10 @@ const accountsSlice = createSlice({
       })
 
 
-      .addCase(createAccount.fulfilled, (state, action: PayloadAction<Account>) => {
+      .addCase(createAccount.fulfilled, (state, action: PayloadAction<Tables<'accounts'>>) => {
         state.list.push(action.payload);
       })
-      .addCase(updateAccount.fulfilled, (state, action: PayloadAction<Account>) => {
+      .addCase(updateAccount.fulfilled, (state, action: PayloadAction<Tables<'accounts'>>) => {
         const index = state.list.findIndex((acc) => acc.id === action.payload.id);
         if (index !== -1) {
           state.list[index] = action.payload;

@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button'
 import Title from '@/components/ui/title'
 import { useTypedSelector } from '@/hooks/useTypedSelector'
 import { AppDispatch } from '@/store/store'
-import { fetchTransactions } from '@/store/transactions/transactions.Thunk'
+import { fetchAllTransactions } from '@/store/transactions/transactions.Thunk'
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -16,7 +16,7 @@ const RecentTransactions = () => {
    const dispatch = useDispatch<AppDispatch>()
   
     useEffect(() => {
-      dispatch(fetchTransactions())
+      dispatch(fetchAllTransactions())
     }, [dispatch])
 
     

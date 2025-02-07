@@ -24,6 +24,7 @@ const Accounts = () => {
   return (
     <div className='flex flex-col'>
       <Title name='Accounts'/>
+      
       <div className='overflow-y-auto h-[64vh] space-y-1'>
         {accounts.map(account => 
         <Card key={account.id} className='mx-4' onClick={() => navigate(`/accounts/${account.id}`)}>

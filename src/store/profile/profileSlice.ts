@@ -1,24 +1,19 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { fetchProfile } from './profile.Thunk';
+import { Tables } from 'database.types';
 
-interface Profile {
-  firstName: string,
-  lastName: string,
-  email: string,
-
-}
-
+export type Profile = Omit<Tables<'profiles'>, 'id'>
 interface ProfileState {
-  profile: Profile;
+  profile: Profile
   loading: boolean;
   error: string | null;
 }
 
 const initialState: ProfileState = {
   profile: {
-    firstName: '',
-    lastName: '',
-    email: '',
+    email:  null,
+    first_name: null,
+    last_name: null
   },
   loading: false,
   error: null,
@@ -34,10 +29,10 @@ const profileSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchProfile.fulfilled, (state, action) => {
+      .addCase(fetchProfile.fulfilled, (state, action: PayloadAction<Profile>) => {
         state.loading = false;
-        state.profile.firstName = action.payload.first_name
-        state.profile.lastName = action.payload.last_name
+        state.profile.first_name = action.payload.first_name
+        state.profile.last_name = action.payload.last_name
         state.profile.email = action.payload.email
       })
       .addCase(fetchProfile.rejected, (state, action) => {
