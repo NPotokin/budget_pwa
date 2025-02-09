@@ -12,140 +12,201 @@ import {
 } from "@/components/ui/select"
 import { Textarea } from '@/components/ui/textarea'
 import Title from '@/components/ui/title'
+import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { useTypedSelector } from '@/hooks/useTypedSelector'
 import { fetchAccounts } from '@/store/accounts/accounts.Thunk'
 import { fetchCategories } from '@/store/categories/categories.Thunk'
-import { AppDispatch } from '@/store/store'
-import { addTransaction, fetchTransactions } from '@/store/transactions/transactions.Thunk'
-import clsx from 'clsx'
+import { addTransaction } from '@/store/transactions/transactions.Thunk'
+import { Transaction } from '@/store/transactions/transactionsSlice'
+import { Tables } from 'database.types'
 import { Minus, Plus, ArrowLeftRight, ArrowRight } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { data, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
-const Transactions: React.FC =  () => {
+const Transactions: React.FC = () => {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  
+  const categories = useTypedSelector(state => state.categories.categories) || [];
+  const accounts = useTypedSelector(state => state.accounts.list) || [];
 
-  const navigate = useNavigate()
-  const dispatch = useDispatch<AppDispatch>()
-  const accounts = useTypedSelector(state => state.accounts)
-  const categories = useTypedSelector(state => state.categories.categories).filter(category => category.type === 'spending')
+  const categoriesSpending = categories.filter(category => category.type === "spending");
+  const categoriesEarning = categories.filter(category => category.type === "income");
+
+  const [selectedFrom, setSelectedFrom] = useState([]);
+  const [selectedTo, setSelectedTo] = useState([]);
+
+  const [transaction, setTransaction] = useState<Transaction>({
+    date: new Date(),
+    amount: 0,
+    account_from: "",
+    account_to: "",
+    category: "",
+    comment: "",
+  });
 
   useEffect(() => {
-    dispatch(fetchAccounts())
-    dispatch(fetchCategories())
-  }, [dispatch])
+    dispatch(fetchAccounts());
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
-  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
-  const handleDayClick = (date: Date) => {
-    setSelectedDate(date);
-    setTransaction({...transaction, date: date})
+  const handleSpending = () => {
+    setSelectedFrom(accounts);
+    setSelectedTo(categoriesSpending);
+    setTransaction(prev => ({ ...prev, account_from: "", category: "" })); 
   };
 
-  const [transaction, setTransaction] = useState({
-    date: new Date(),
-    amount: '',
-    account_from: '',
-    account_to: null,
-    category: '',
-    comment: ''
-  })
+  const handleTransfer = () => {
+    setSelectedFrom(accounts);
+    setSelectedTo(accounts);
+    setTransaction(prev => ({ ...prev, account_from: "", account_to: "" }));
+  };
+
+  const handleEarning = () => {
+    setSelectedFrom(categoriesEarning);
+    setSelectedTo(accounts);
+    setTransaction(prev => ({ ...prev, category: "", account_to: "" }));
+  };
+
+ 
 
   return (
-    <div className='flex-flex-col w-full'>
-      <Title name='Transactions'/>
+    <div className="flex-flex-col w-full">
+      <Title name="Transactions" />
 
-      <div className='flex flex-col space-y-3'>
+      <div className="flex flex-col space-y-2">
+        <Calendar
+          weekStartsOn={1}
+          className="w-[95vw] mx-4"
+          selected={transaction.date}
+          onDayClick={(date) => setTransaction({ ...transaction, date })}
+        />
 
-        <Calendar weekStartsOn={1} className='w-[95vw] mx-4' selected={selectedDate} onDayClick={handleDayClick}/>
+        {/* Buttons for transaction types */}
+        <div className="flex justify-between pt-2 mx-8">
+          <button
+            onClick={handleEarning}
+            className="w-[25vw] h-8 rounded-2xl bg-green-800 items-center justify-center text-secondary flex"
+          >
+            <Plus size={20} />
+          </button>
+          <button
+            onClick={handleTransfer}
+            className="w-[25vw] h-8 rounded-2xl bg-primary items-center justify-center text-secondary flex"
+          >
+            <ArrowLeftRight size={20} />
+          </button>
+          <button
+            onClick={handleSpending}
+            className="w-[25vw] h-8 rounded-2xl bg-red-800 items-center justify-center text-secondary flex"
+          >
+            <Minus size={20} />
+          </button>
+        </div>
 
-        <div className='flex justify-evenly items-center m-4'>
-          <div className='flex flex-col'>
-            
+        {/* Selection for "From" and "To" */}
+        <div className="flex justify-evenly items-center m-4">
+          <div className="flex flex-col">
             <p>From:</p>
             <Select
-            onValueChange={(value)=> setTransaction({...transaction, account_from: value})}>
+              onValueChange={(value) =>
+                selectedFrom == accounts 
+                ? setTransaction({ ...transaction, account_from: value })
+                : setTransaction ({ ...transaction, category: value })
+              }
+            >
               <SelectTrigger className="w-[35vw]">
-                <SelectValue placeholder="Select a Account" />
+                <SelectValue placeholder="Select an Account" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  {accounts.list.map(account => 
-                  <SelectItem key={account.id} value={account.id}>{account.name}</SelectItem>
-                  )}
+                  {selectedFrom.map((item) => (
+                    <SelectItem key={item.id} value={item.id}>
+                      {item.name}
+                    </SelectItem>
+                  ))}
                 </SelectGroup>
               </SelectContent>
             </Select>
           </div>
+
           <div>
-            <ArrowRight size={40} className='text-primary'/>
+            <ArrowRight size={40} className="text-primary" />
           </div>
-          <div className='flex flex-col'>
-            
+
+          <div className="flex flex-col">
             <p>To:</p>
-            <Select onValueChange={(value)=> setTransaction({...transaction, category: value})}>
+            <Select
+              onValueChange={(value) =>
+                selectedTo == accounts 
+                ? selectedFrom == accounts 
+                  ? setTransaction({ ...transaction, account_to: value, category: null }) // acc to acc 
+                  : setTransaction({ ...transaction, account_to: value, account_from: null}) // cat to acc 
+                : null
+              }
+              
+            >
               <SelectTrigger className="w-[35vw]">
-                <SelectValue placeholder="Select categoty" />
+                <SelectValue placeholder="Select category or account" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  {categories.map(categoty => 
-                  <SelectItem key={categoty.id} value={categoty.id}>{categoty.name}</SelectItem>
-                  )}
+                  {selectedTo.map((item) => (
+                    <SelectItem key={item.id} value={item.id}>
+                      {item.name}
+                    </SelectItem>
+                  ))}
                 </SelectGroup>
               </SelectContent>
             </Select>
           </div>
         </div>
 
-        <Input type='number' placeholder="Amount" min={0} required onChange={(e) => setTransaction({...transaction, amount: e.target.value}) }/>
+        {/* Amount Input */}
+        <Input
+          type="number"
+          placeholder="Amount"
+          min={0}
+          required
+          onChange={(e) =>
+            setTransaction({ ...transaction, amount: parseFloat(e.target.value) })
+          }
+        />
 
-        <div className='flex flex-col'>
-          <h3 className='mx-8'>Comment:</h3>
-          <div className='flex items-center mx-8'>
-            <Textarea onChange={(e) => setTransaction({...transaction, comment: e.target.value})}/>
+        {/* Comment Section */}
+        <div className="flex flex-col">
+          <h3 className="mx-8">Comment:</h3>
+          <div className="flex items-center mx-8">
+            <Textarea
+              onChange={(e) =>
+                setTransaction({ ...transaction, comment: e.target.value })
+              }
+            />
           </div>
         </div>
 
-        <div className='flex justify-between pt-2 mx-8'>
-          <button className='w-[25vw] h-16 rounded-2xl bg-green-800 items-center justify-center text-secondary flex'>
-            <Plus size={40} />
-          </button>
-          <button className='w-[25vw] h-16 rounded-2xl bg-primary items-center justify-center text-secondary flex'>
-            <ArrowLeftRight size={40} />
-          </button>
-          <button className='w-[25vw] h-16 rounded-2xl bg-red-800 items-center justify-center text-secondary flex'>
-            <Minus size={40} />
-          </button>
-        </div>
-
-        <Button variant={'default'} className='m-8 py-6' onClick={() => dispatch(addTransaction(transaction))}>
-                Add Transaction
-        </Button>
-
-        <Button 
-          variant={'link'} 
-          className='py-4'
-          onClick={() => {
-            navigate('/transactions')
-          }}
+        {/* Submit Button */}
+        <Button
+          variant={"default"}
+          className="m-8 py-6"
+          onClick={() => dispatch(addTransaction(transaction))}
         >
-                See Recent Transactions
+          Add Transaction
         </Button>
 
-
-
-        
-
+        {/* Navigate to Recent Transactions */}
+        <Button
+          variant={"link"}
+          className="py-4"
+          onClick={() => navigate("/transactions")}
+        >
+          See Recent Transactions
+        </Button>
       </div>
-      
-
-      
-
-
-        
     </div>
-  )
-}
+  );
+};
 
-export default Transactions
+export default Transactions;
+
 

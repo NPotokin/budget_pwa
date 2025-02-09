@@ -18,7 +18,6 @@ import CategoryOverview from './pages/Categories/CategoryOverview';
 import RecentTransactions from './pages/Transactions/RecentTransactions';
 
 const App= () => {
-  
 
   return (
     <>

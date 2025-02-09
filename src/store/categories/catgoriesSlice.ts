@@ -1,11 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { addCategory, deleteCategory, fetchCategories } from './categories.Thunk';
+import { Tables } from 'database.types';
 
-interface Category {
-  id: string,
-  name: string,
-  category_limit: number,
-  type: "income" | 'spending'
+export type Category = Tables<'categories'> & {
+  used: number;
 }
 
 interface CategoryState {

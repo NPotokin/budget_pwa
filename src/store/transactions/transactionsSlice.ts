@@ -1,15 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { fetchAllTransactions } from './transactions.Thunk';
+import { Tables } from 'database.types';
 
-export interface Transaction {
-  id: string,
-  date: Date,
-  amount: number,
-  account_from: string,
-  account_to: string | null,
-  category: string | null,
-  comment: string
-}
+export type Transaction = Tables<'transactions'>
 
 interface TransactionState {
   transactions: Transaction[];
@@ -33,7 +26,7 @@ const transactionsSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchAllTransactions.fulfilled, (state, action) => {
+      .addCase(fetchAllTransactions.fulfilled, (state, action: PayloadAction<Transaction[]>) => {
         state.loading = false;
         state.transactions = action.payload
       })
