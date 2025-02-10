@@ -18,7 +18,6 @@ import { fetchAccounts } from '@/store/accounts/accounts.Thunk'
 import { fetchCategories } from '@/store/categories/categories.Thunk'
 import { addTransaction } from '@/store/transactions/transactions.Thunk'
 import { Transaction } from '@/store/transactions/transactionsSlice'
-import { Tables } from 'database.types'
 import { Minus, Plus, ArrowLeftRight, ArrowRight } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -116,7 +115,7 @@ const Transactions: React.FC = () => {
               }
             >
               <SelectTrigger className="w-[35vw]">
-                <SelectValue placeholder="Select an Account" />
+                <SelectValue placeholder={selectedFrom === accounts ? 'Account' : 'Category'} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
@@ -147,7 +146,7 @@ const Transactions: React.FC = () => {
               
             >
               <SelectTrigger className="w-[35vw]">
-                <SelectValue placeholder="Select category or account" />
+                <SelectValue placeholder={selectedTo === accounts ? 'Account' : 'Category'} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
@@ -164,6 +163,7 @@ const Transactions: React.FC = () => {
 
         {/* Amount Input */}
         <Input
+          className='w-[85vw] mx-auto '
           type="number"
           placeholder="Amount"
           min={0}
@@ -177,7 +177,7 @@ const Transactions: React.FC = () => {
         <div className="flex flex-col">
           <h3 className="mx-8">Comment:</h3>
           <div className="flex items-center mx-8">
-            <Textarea
+            <Textarea className='h-[20px]'
               onChange={(e) =>
                 setTransaction({ ...transaction, comment: e.target.value })
               }
@@ -187,6 +187,7 @@ const Transactions: React.FC = () => {
 
         {/* Submit Button */}
         <Button
+          disabled={!transaction.date || !transaction.amount || !transaction.comment}
           variant={"default"}
           className="m-8 py-6"
           onClick={() => dispatch(addTransaction(transaction))}

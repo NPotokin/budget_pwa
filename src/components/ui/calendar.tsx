@@ -42,7 +42,7 @@ function Calendar({
         ),
         day: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-7 w-[12vw] p-0 font-normal aria-selected:opacity-100"
+          "h-6 w-[12vw] p-0 font-normal aria-selected:opacity-100"
         ),
         day_range_start: "day-range-start",
         day_range_end: "day-range-end",
