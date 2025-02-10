@@ -9,6 +9,8 @@ import { AccountCard } from './AccountCard';
 import { AccountCardSkeleton } from './AccountCardSkeleton';
 import { Card } from '@/components/ui/card';
 import { fetchAllTransactions } from '@/store/transactions/transactions.Thunk';
+import { Transaction } from '@/store/transactions/transactionsSlice';
+import { Account } from '@/store/accounts/accountsSlice';
 
 const AccountOverview: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -33,7 +35,7 @@ const AccountOverview: React.FC = () => {
     navigate('/accounts')
   }
 
-  const getTransactionTarget = (transaction, thisAccount) => {
+  const getTransactionTarget = (transaction: Transaction, thisAccount: Account) => {
     if (transaction.account_from === thisAccount.name) {
       return transaction.account_to || transaction.category;
     }

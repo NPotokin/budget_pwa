@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,7 @@ export function Recovery() {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
   
-    const handleResetPassword = async (e) => {
+    const handleResetPassword = async (e: FormEvent) => {
       e.preventDefault();
       setError(null);
       setMessage('')

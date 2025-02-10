@@ -1,15 +1,21 @@
-import { Navigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { supabase } from '../../supabaseClient';
+import React, { ReactNode, useEffect, useState } from "react";
+import { Navigate, Session } from "react-router-dom";
+import { supabase } from "../../supabaseClient";
 
-const ProtectedRoute = ({ children }) => {
-  const [loading, setLoading] = useState(true);
-  const [session, setSession] = useState(null);
+interface ProtectedRouteProps {
+  children: ReactNode;
+}
+
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  const [loading, setLoading] = useState<boolean>(true);
+  const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
     const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      setSession(session as unknown as Session);
       setLoading(false);
     };
 
@@ -24,7 +30,7 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/login" />;
   }
 
-  return children;
+  return <>{children}</>; // Render children if session exists
 };
 
 export default ProtectedRoute;

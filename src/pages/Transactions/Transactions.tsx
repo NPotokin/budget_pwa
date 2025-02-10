@@ -6,7 +6,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
@@ -15,11 +14,14 @@ import Title from '@/components/ui/title'
 import { useAppDispatch } from '@/hooks/useAppDispatch'
 import { useTypedSelector } from '@/hooks/useTypedSelector'
 import { fetchAccounts } from '@/store/accounts/accounts.Thunk'
+import { Account } from '@/store/accounts/accountsSlice'
 import { fetchCategories } from '@/store/categories/categories.Thunk'
+import { Category } from '@/store/categories/catgoriesSlice'
 import { addTransaction } from '@/store/transactions/transactions.Thunk'
 import { Transaction } from '@/store/transactions/transactionsSlice'
 import { Minus, Plus, ArrowLeftRight, ArrowRight } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
+import { Matcher } from 'react-day-picker'
 import { useNavigate } from 'react-router-dom'
 
 const Transactions: React.FC = () => {
@@ -32,10 +34,11 @@ const Transactions: React.FC = () => {
   const categoriesSpending = categories.filter(category => category.type === "spending");
   const categoriesEarning = categories.filter(category => category.type === "income");
 
-  const [selectedFrom, setSelectedFrom] = useState([]);
-  const [selectedTo, setSelectedTo] = useState([]);
+  const [selectedFrom, setSelectedFrom] = useState<Account[] | Category[]>([]);
+  const [selectedTo, setSelectedTo] = useState<Account[] | Category[]>([]);
 
   const [transaction, setTransaction] = useState<Transaction>({
+    //@ts-expect-error types mismatch
     date: new Date(),
     amount: 0,
     account_from: "",
@@ -77,8 +80,8 @@ const Transactions: React.FC = () => {
         <Calendar
           weekStartsOn={1}
           className="w-[95vw] mx-4"
-          selected={transaction.date}
-          onDayClick={(date) => setTransaction({ ...transaction, date })}
+          selected={transaction.date as unknown as Matcher}
+          onDayClick={(date) => setTransaction({ ...transaction, date: date.toISOString().split("T")[0] })}
         />
 
         {/* Buttons for transaction types */}

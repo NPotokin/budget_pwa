@@ -20,6 +20,7 @@ import { AppDispatch } from "@/store/store";
 import { createAccount } from "@/store/accounts/accounts.Thunk";
 import { supabase } from "@/supabaseClient";
 import { useNavigate } from "react-router-dom";
+import { Account } from "@/store/accounts/accountsSlice";
 
 
 
@@ -43,7 +44,7 @@ const AddAccount: React.FC = () => {
   });
 
   const navigate = useNavigate()
-  const [userId, setUserId] = useState(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -65,7 +66,7 @@ const AddAccount: React.FC = () => {
         ...data,
         user_id: userId,
       };
-      dispatch(createAccount(accountData));
+      dispatch(createAccount(accountData as Account));
       navigate('/accounts')
       
     } else {

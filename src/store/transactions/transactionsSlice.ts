@@ -26,6 +26,7 @@ const transactionsSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
+      //@ts-expect-error mismatch
       .addCase(fetchAllTransactions.fulfilled, (state, action: PayloadAction<Transaction[]>) => {
         state.loading = false;
         state.transactions = action.payload

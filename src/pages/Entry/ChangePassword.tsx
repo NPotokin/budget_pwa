@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { Button } from '@/components/ui/button';
@@ -14,11 +14,11 @@ import { Label } from '@/components/ui/label';
 export const ChangePassword = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleResetPassword = async (e) => {
+  const handleResetPassword = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
     setSuccess(null);

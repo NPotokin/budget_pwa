@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { addCategory } from "@/store/categories/categories.Thunk";
+import { Category } from "@/store/categories/catgoriesSlice";
 
 // Define the schema for form validation
 const FormSchema = z.object({
@@ -56,7 +57,7 @@ const CategoryAdd: React.FC = () => {
       category_limit: data.categoryLimit,
       type: data.categoryType
     }
-    dispatch(addCategory(category))
+    dispatch(addCategory(category as Category) )
     navigate('/categories')
   }
 

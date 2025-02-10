@@ -49,16 +49,16 @@ export const fetchAccounts = createAsyncThunk(
       }));
 
       return accountsWithStats;
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error: unknown) {
+      return rejectWithValue(error);
     }
   }
 );
 
 
-export const createAccount =  createAsyncThunk<Account>(
+export const createAccount =  createAsyncThunk<Account, Account>(
   'accounts/createAccount',
-  async (account) => {
+  async (account: Account) => {
     const { data, error } = await supabase.from('accounts').insert([account]).select().single();
     if (error) throw error;
     return data as Account;

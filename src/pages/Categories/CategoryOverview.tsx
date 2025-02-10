@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import Title from '@/components/ui/title'
 import { useTypedSelector } from '@/hooks/useTypedSelector';
 import { deleteCategory, fetchCategories } from '@/store/categories/categories.Thunk';
@@ -11,7 +11,7 @@ import { CategoryCard } from './CategoryCard';
 import { fetchAllTransactions } from '@/store/transactions/transactions.Thunk';
 import { AccountCardSkeleton } from '../Accounts/AccountCardSkeleton';
 
-const CategoryOverview = () => {
+const CategoryOverview: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
 
@@ -28,7 +28,7 @@ const CategoryOverview = () => {
   const thisCategoryTransactions = transactions.transactions.filter(tr => tr.category === thisCategory?.name)
   
   const deleteThisCategory = () => {
-    dispatch(deleteCategory(thisCategory?.id))
+    dispatch(deleteCategory(thisCategory?.id as string))
     navigate('/categories')
   }
 

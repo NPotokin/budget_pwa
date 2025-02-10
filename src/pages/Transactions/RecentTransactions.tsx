@@ -7,7 +7,7 @@ import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
-const RecentTransactions = () => {
+const RecentTransactions: React.FC = () => {
   
 
   const navigate = useNavigate()

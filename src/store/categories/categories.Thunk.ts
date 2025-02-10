@@ -45,31 +45,31 @@ export const fetchCategories = createAsyncThunk(
         }));
   
         return categoriesWithStats;
-      } catch (error: any) {
-        return rejectWithValue(error.message);
+      } catch (error: unknown) {
+        return rejectWithValue(error);
       }
     }
   );
 
 
-export const addCategory = createAsyncThunk(
+export const addCategory = createAsyncThunk<Category, Category>(
   'categories/addCategory',
-  async (category) => {
+  async (category: Category) => {
     const { data, error } = await supabase.from('categories').insert([category]).select().single();
         if (error) throw error;
         return data;
 	}
 )
 
-export const deleteCategory = createAsyncThunk(
+export const deleteCategory = createAsyncThunk<string, string>(
   'categories/deleteCategory',
-  async (categoryId, { rejectWithValue }) => {
+  async (categoryId: string, { rejectWithValue }) => {
 		try {
       const { error } = await supabase.from('categories').delete().eq('id', categoryId).select();
       if (error) throw error;
       return categoryId;
 		} catch (e) {
-			return rejectWithValue(e.message)
+			return rejectWithValue(e)
 		}
 	}
 )

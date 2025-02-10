@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 import { Button } from '@/components/ui/button';
@@ -15,13 +15,13 @@ export const Registration = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
-  const [firstName, setFirstName] = useState('');
+  const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState('');
-  const [error, setError] = useState(null);
-  const [passwordError, setPasswordError] = useState(null); 
+  const [error, setError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null); 
   const navigate = useNavigate();
 
-  const handleSignUp = async (e) => {
+  const handleSignUp = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
     setPasswordError(null); 
@@ -50,7 +50,7 @@ export const Registration = () => {
     }
   };
 
-  const handlePasswordChange = (e) => {
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
     if (repeatPassword && e.target.value !== repeatPassword) {
       setPasswordError('Passwords do not match');
@@ -59,7 +59,7 @@ export const Registration = () => {
     }
   };
 
-  const handleRepeatPasswordChange = (e) => {
+  const handleRepeatPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRepeatPassword(e.target.value);
     if (password && e.target.value !== password) {
       setPasswordError('Passwords do not match');
@@ -135,7 +135,7 @@ export const Registration = () => {
               </div>
               {passwordError && <p className="text-red-800 text-sm">{passwordError}</p>}
               {error && <p className="text-red-800 text-sm">{error}</p>}
-              <Button type="submit" className="w-[78vw]" disabled={passwordError}>
+              <Button type="submit" className="w-[78vw]" disabled={!!passwordError}>
                 Sign Up
               </Button>
             </div>

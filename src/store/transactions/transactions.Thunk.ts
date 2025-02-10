@@ -1,7 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { supabase } from '../../supabaseClient';
 import { Transaction } from './transactionsSlice';
-import { Account } from '../accounts/accountsSlice';
 
 export const fetchAllTransactions = createAsyncThunk(
   "transactions/fetchAllTransactions",
@@ -39,13 +38,13 @@ export const fetchAllTransactions = createAsyncThunk(
         id: t.id,
         date: t.date,
         amount: t.amount,
-        account_from: t.account_from?.name || null,
-        account_to: t.account_to?.name || null,
-        category: t.category?.name || null,
+        account_from: t.account_from?.[0].name || null,
+        account_to: t.account_to?.[0].name || null,
+        category: t.category?.[0].name || null,
         comment: t.comment,
       }));
-    } catch (e: any) {
-      return rejectWithValue(e.message);
+    } catch (e) {
+      return rejectWithValue(e);
     }
   }
 );
@@ -134,8 +133,8 @@ export const addTransaction = createAsyncThunk(
       }
 
       return data; 
-    } catch (err: any) {
-      return rejectWithValue(err.message);
+    } catch (err) {
+      return rejectWithValue(err);
     }
   }
 );
