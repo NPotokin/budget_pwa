@@ -38,9 +38,12 @@ export const fetchAllTransactions = createAsyncThunk(
         id: t.id,
         date: t.date,
         amount: t.amount,
-        account_from: t.account_from?.[0].name || null,
-        account_to: t.account_to?.[0].name || null,
-        category: t.category?.[0].name || null,
+        //@ts-expect-error mismatch
+        account_from: t.account_from?.name || null,
+        ///@ts-expect-error mismatch
+        account_to: t.account_to?.name || null,
+       //@ts-expect-error mismatch
+        category: t.category?.name || null,
         comment: t.comment,
       }));
     } catch (e) {
