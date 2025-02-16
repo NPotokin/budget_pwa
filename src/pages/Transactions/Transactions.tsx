@@ -21,7 +21,6 @@ import { addTransaction } from '@/store/transactions/transactions.Thunk'
 import { Transaction } from '@/store/transactions/transactionsSlice'
 import { Minus, Plus, ArrowLeftRight, ArrowRight } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import { Matcher } from 'react-day-picker'
 import { useNavigate } from 'react-router-dom'
 
 const Transactions: React.FC = () => {
@@ -38,7 +37,7 @@ const Transactions: React.FC = () => {
   const [selectedTo, setSelectedTo] = useState<Account[] | Category[]>([]);
 
   const [transaction, setTransaction] = useState<Transaction>({
-    //@ts-expect-error types mismatch
+    //@ts-expect-error mismatch
     date: new Date(),
     amount: 0,
     account_from: "",
@@ -55,22 +54,36 @@ const Transactions: React.FC = () => {
   const handleSpending = () => {
     setSelectedFrom(accounts);
     setSelectedTo(categoriesSpending);
-    setTransaction(prev => ({ ...prev, account_from: "", category: "" })); 
+    setTransaction(prev => ({ ...prev, account_from: "", category: "", account_to: null })); 
   };
 
   const handleTransfer = () => {
     setSelectedFrom(accounts);
-    setSelectedTo(accounts);
-    setTransaction(prev => ({ ...prev, account_from: "", account_to: "" }));
+    setSelectedTo(accounts)
+    setTransaction(prev => ({ ...prev, account_from: "", account_to: "", category: null }));
   };
 
   const handleEarning = () => {
     setSelectedFrom(categoriesEarning);
     setSelectedTo(accounts);
-    setTransaction(prev => ({ ...prev, category: "", account_to: "" }));
+    setTransaction(prev => ({ ...prev, category: "", account_to: "", account_from: null }));
   };
 
- 
+  const handleAddTransaction = async () => {
+    const result = await dispatch(addTransaction(transaction));
+
+    if (addTransaction.fulfilled.match(result)) { 
+      setTransaction({
+        //@ts-expect-error mismatch date
+        date: new Date(),
+        amount: 0,
+        account_from: "",
+        account_to: "",
+        category: "",
+        comment: ""
+      });
+    }
+  };
 
   return (
     <div className="flex-flex-col w-full">
@@ -80,11 +93,12 @@ const Transactions: React.FC = () => {
         <Calendar
           weekStartsOn={1}
           className="w-[95vw] mx-4"
-          selected={transaction.date as unknown as Matcher}
-          onDayClick={(date) => setTransaction({ ...transaction, date: date.toISOString().split("T")[0] })}
+          selected={new Date(transaction.date)}
+          onDayClick={(date) =>
+            setTransaction({ ...transaction, date: date.toISOString() })
+          }
         />
 
-        {/* Buttons for transaction types */}
         <div className="flex justify-between pt-2 mx-8">
           <button
             onClick={handleEarning}
@@ -106,19 +120,18 @@ const Transactions: React.FC = () => {
           </button>
         </div>
 
-        {/* Selection for "From" and "To" */}
         <div className="flex justify-evenly items-center m-4">
           <div className="flex flex-col">
             <p>From:</p>
             <Select
               onValueChange={(value) =>
-                selectedFrom == accounts 
-                ? setTransaction({ ...transaction, account_from: value })
-                : setTransaction ({ ...transaction, category: value })
+                selectedFrom === accounts 
+                  ? setTransaction({ ...transaction, account_from: value })
+                  : setTransaction({ ...transaction, category: value })
               }
             >
               <SelectTrigger className="w-[35vw]">
-                <SelectValue placeholder={selectedFrom === accounts ? 'Account' : 'Category'} />
+                <SelectValue placeholder='Select'/>
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
@@ -133,23 +146,20 @@ const Transactions: React.FC = () => {
           </div>
 
           <div>
-            <ArrowRight size={40} className="text-primary" />
+            <ArrowRight size={36} className="text-primary" />
           </div>
 
           <div className="flex flex-col">
             <p>To:</p>
             <Select
               onValueChange={(value) =>
-                selectedTo == accounts 
-                ? selectedFrom == accounts 
-                  ? setTransaction({ ...transaction, account_to: value, category: null }) // acc to acc 
-                  : setTransaction({ ...transaction, account_to: value, account_from: null}) // cat to acc 
-                : null
+                selectedTo === accounts 
+                  ? setTransaction({ ...transaction, account_to: value })
+                  : setTransaction({ ...transaction, category: value })
               }
-              
             >
               <SelectTrigger className="w-[35vw]">
-                <SelectValue placeholder={selectedTo === accounts ? 'Account' : 'Category'} />
+                <SelectValue placeholder='Select' />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
@@ -164,23 +174,24 @@ const Transactions: React.FC = () => {
           </div>
         </div>
 
-        {/* Amount Input */}
         <Input
-          className='w-[85vw] mx-auto '
+          className='w-[85vw] mx-auto'
           type="number"
           placeholder="Amount"
           min={0}
           required
+          value={transaction.amount || ""}
           onChange={(e) =>
-            setTransaction({ ...transaction, amount: parseFloat(e.target.value) })
+            setTransaction({ ...transaction, amount: parseFloat(e.target.value) || 0 })
           }
         />
 
-        {/* Comment Section */}
         <div className="flex flex-col">
           <h3 className="mx-8">Comment:</h3>
           <div className="flex items-center mx-8">
-            <Textarea className='h-[20px]'
+            <Textarea 
+              className='h-[20px]'
+              value={transaction.comment!}
               onChange={(e) =>
                 setTransaction({ ...transaction, comment: e.target.value })
               }
@@ -188,17 +199,24 @@ const Transactions: React.FC = () => {
           </div>
         </div>
 
-        {/* Submit Button */}
         <Button
-          disabled={!transaction.date || !transaction.amount || !transaction.comment}
+          disabled={
+            !transaction.date || 
+            !transaction.amount || 
+            !transaction.comment ||
+            !(
+              (transaction.account_from && transaction.account_to) || // Transfer
+              (transaction.account_from && transaction.category) ||   // Spending
+              (transaction.category && transaction.account_to)        // Earning
+            )
+          }
           variant={"default"}
           className="m-8 py-6"
-          onClick={() => dispatch(addTransaction(transaction))}
+          onClick={handleAddTransaction}
         >
           Add Transaction
         </Button>
 
-        {/* Navigate to Recent Transactions */}
         <Button
           variant={"link"}
           className="py-4"
@@ -212,5 +230,3 @@ const Transactions: React.FC = () => {
 };
 
 export default Transactions;
-
-

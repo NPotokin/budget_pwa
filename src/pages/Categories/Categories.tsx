@@ -13,7 +13,9 @@ const Categories: React.FC = () => {
   const categories = useTypedSelector(state => state.categories)
 
   useEffect(() => {
-    dispatch(fetchCategories())
+    
+      dispatch(fetchCategories())
+    
   }, [dispatch])
 
   return (
@@ -27,8 +29,9 @@ const Categories: React.FC = () => {
         )}
       </div>
 
-      
      
+
+      
       <Button type={'button'} variant={'default'} className='mx-4 p-6' onClick={() => navigate('/categories/add')}>
         Add Category
       </Button>

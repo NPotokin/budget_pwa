@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { addCategory, deleteCategory, fetchCategories } from './categories.Thunk';
+import { addCategory, deleteCategory, fetchCategories, updateCategoryLimit, updateCategoryName } from './categories.Thunk';
 import { Tables } from 'database.types';
 
 export type Category = Tables<'categories'> & {
@@ -47,6 +47,38 @@ const categoriesSlice = createSlice({
         state.categories = [...state.categories, action.payload]
       })
       .addCase(addCategory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to fetch profile';
+      })
+
+      .addCase(updateCategoryName.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateCategoryName.fulfilled, (state, action) => {
+        state.loading = false;
+        const index = state.categories.findIndex((cat) => cat.id === action.payload.id);
+        if (index !== -1) {
+          state.categories[index] = action.payload;
+        }
+      })
+      .addCase(updateCategoryName.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to fetch profile';
+      })
+
+      .addCase(updateCategoryLimit.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateCategoryLimit.fulfilled, (state, action) => {
+        state.loading = false;
+        const index = state.categories.findIndex((cat) => cat.id === action.payload.id);
+        if (index !== -1) {
+          state.categories[index] = action.payload;
+        }
+      })
+      .addCase(updateCategoryLimit.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch profile';
       })

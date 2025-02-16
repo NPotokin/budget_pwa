@@ -61,6 +61,35 @@ export const addCategory = createAsyncThunk<Category, Category>(
 	}
 )
 
+export const updateCategoryName = createAsyncThunk(
+  "accounts/updateCategoryName",
+  async ({ id, name }: { id: string; name: string }) => {
+    const { data, error } = await supabase
+      .from("categories")
+      .update({ name })
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw error;
+    console.log(data)
+    return data as Category;
+  }
+);
+
+export const updateCategoryLimit = createAsyncThunk(
+  "accounts/updateCategoryLimit",
+  async ({ id, category_limit }: { id: string; category_limit: number }) => {
+    const { data, error } = await supabase
+      .from("categories")
+      .update({ category_limit })
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data as Category;
+  }
+);
+
 export const deleteCategory = createAsyncThunk<string, string>(
   'categories/deleteCategory',
   async (categoryId: string, { rejectWithValue }) => {

@@ -15,8 +15,9 @@ export const CategoryCard: React.FC<CategoryProps> = ({category}) =>  {
         <CardHeader>
             <div className="flex flex-col">
                 <CardTitle 
-                className={`text-2xl font-light mb-2 ${category.type === "spending" ? "text-red-800" : "text-green-800"}`}
-                >{category.name}
+                className={`text-2xl font-light mb-2 flex justify-between ${category.type === "spending" ? "text-red-800" : "text-green-800"}`}
+                >
+                  <p>{category.name}</p>
                 </CardTitle>
                 <CardDescription>
                     <div className="flex justify-between">

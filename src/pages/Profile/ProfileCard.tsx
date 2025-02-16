@@ -12,8 +12,9 @@ const ProfileCard: React.FC = () => {
     const profile = useTypedSelector(state => state.profile)
   
     useEffect(() => {
+      if(!profile.profile.email)
         dispatch(fetchProfile())
-      }, [dispatch] )
+      }, [dispatch, profile] )
 
 
     if(profile.loading) {

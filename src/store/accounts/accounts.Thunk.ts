@@ -65,13 +65,29 @@ export const createAccount =  createAsyncThunk<Account, Account>(
   }
 );
 
-export const updateAccount = createAsyncThunk<Account, Account>(
-  'accounts/updateAccount',
-  async (account) => {
+export const updateAccountName = createAsyncThunk(
+  "accounts/updateAccountName",
+  async ({ id, name }: { id: string; name: string }) => {
     const { data, error } = await supabase
-      .from('accounts')
-      .update({ name: account.name, balance: account.balance })
-      .eq('id', account.id)
+      .from("accounts")
+      .update({ name })
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw error;
+    console.log(data)
+    return data as Account;
+  }
+);
+
+export const updateAccountBalance = createAsyncThunk(
+  "accounts/updateAccountBalance",
+  async ({ id, balance }: { id: string; balance: number }) => {
+    const { data, error } = await supabase
+      .from("accounts")
+      .update({ balance })
+      .eq("id", id)
+      .select()
       .single();
     if (error) throw error;
     return data as Account;
@@ -81,7 +97,10 @@ export const updateAccount = createAsyncThunk<Account, Account>(
 export const deleteAccount = createAsyncThunk(
   'accounts/deleteAccount',
   async (accountId: string) => {
-    const { error } = await supabase.from('accounts').delete().eq('id', accountId);
+    const { error } = await supabase
+    .from('accounts')
+    .delete()
+    .eq('id', accountId);
     if (error) throw error;
     return accountId;
   }

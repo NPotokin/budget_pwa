@@ -22,6 +22,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { addCategory } from "@/store/categories/categories.Thunk";
 import { Category } from "@/store/categories/catgoriesSlice";
+import { CircleChevronLeft } from "lucide-react";
 
 // Define the schema for form validation
 const FormSchema = z.object({
@@ -64,6 +65,9 @@ const CategoryAdd: React.FC = () => {
   return (
     <div className="flex flex-col space-y-6">
       <Title name="Add Category" />
+      <Button type={'button'} variant={'link'} className="justify-start" onClick={() => navigate('/categories')}>
+        <CircleChevronLeft/> Back to Categories
+      </Button>
 
       <Form {...form} >
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

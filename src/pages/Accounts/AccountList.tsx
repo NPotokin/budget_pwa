@@ -13,6 +13,7 @@ export const AccountList: React.FC = () =>  {
   const accounts = useTypedSelector(state => state.accounts)
   
   useEffect(() => {
+    
     dispatch(fetchAccounts())
   }, [dispatch] )
 
@@ -21,6 +22,8 @@ export const AccountList: React.FC = () =>  {
     <AccountCardSkeleton/>
     )
   }
+
+  
 
   return (
     accounts.list.map(account => 

@@ -1,7 +1,7 @@
 // accountsSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {Tables} from '../../../database.types'
-import { fetchAccounts, createAccount, updateAccount, deleteAccount } from './accounts.Thunk';
+import { fetchAccounts, createAccount, deleteAccount, updateAccountName, updateAccountBalance } from './accounts.Thunk';
 
 
 export type Account = Tables<"accounts"> & {
@@ -49,18 +49,49 @@ const accountsSlice = createSlice({
       })
       .addCase(deleteAccount.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to fetch accounts';
+        state.error = action.error.message || 'Failed to delete account';
       })
 
-
+      .addCase(createAccount.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(createAccount.fulfilled, (state, action: PayloadAction<Account>) => {
         state.list.push(action.payload);
       })
-      .addCase(updateAccount.fulfilled, (state, action: PayloadAction<Account>) => {
+      .addCase(createAccount.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to create account';
+      })
+      
+      .addCase(updateAccountName.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateAccountName.fulfilled, (state, action: PayloadAction<Account>) => {
         const index = state.list.findIndex((acc) => acc.id === action.payload.id);
         if (index !== -1) {
           state.list[index] = action.payload;
         }
+      })
+      .addCase(updateAccountName.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to update account name';
+      })
+      
+      .addCase(updateAccountBalance.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateAccountBalance.fulfilled, (state, action: PayloadAction<Account>) => {
+        const index = state.list.findIndex((acc) => acc.id === action.payload.id);
+        if (index !== -1) {
+          state.list[index] = action.payload;
+        }
+      })
+      .addCase(updateAccountBalance.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to update account name';
       });
   },
 });

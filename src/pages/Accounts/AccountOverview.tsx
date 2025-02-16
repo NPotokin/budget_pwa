@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button'
 import Title from '@/components/ui/title'
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useTypedSelector } from '@/hooks/useTypedSelector';
-import { fetchAccounts, deleteAccount } from '@/store/accounts/accounts.Thunk';
+import { fetchAccounts } from '@/store/accounts/accounts.Thunk';
 import React, { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { AccountCard } from './AccountCard';
@@ -11,29 +11,33 @@ import { Card } from '@/components/ui/card';
 import { fetchAllTransactions } from '@/store/transactions/transactions.Thunk';
 import { Transaction } from '@/store/transactions/transactionsSlice';
 import { Account } from '@/store/accounts/accountsSlice';
+import { CircleChevronLeft } from 'lucide-react';
 
 const AccountOverview: React.FC = () => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const accounts = useTypedSelector(state => state.accounts)
+  const transactions = useTypedSelector(state => state.transactions)
 
   useEffect(() => {
-    dispatch(fetchAccounts())
-    dispatch(fetchAllTransactions())
-  }, [dispatch] )
+    const checkAccountsAndTransactions = async () => {
+      if(accounts.list.length === 0){
+        await dispatch(fetchAccounts())
+      }
+      if(transactions.transactions.length === 0){
+        await dispatch(fetchAllTransactions())
+      }
+    }
+    checkAccountsAndTransactions()
+  }, [dispatch, accounts, transactions.transactions.length] )
 
   const { accountId } = useParams();
 
-  const accounts = useTypedSelector(state => state.accounts)
   const thisAccount = accounts.list.find(account => account.id === accountId)
-  const transactions = useTypedSelector(state => state.transactions.transactions)
-  const thisAccountTransactionsTo = transactions.filter(transaction => transaction.account_to === thisAccount?.name) // use || ???
-  const thisAccountTransactionsFrom = transactions.filter(transaction => transaction.account_from === thisAccount?.name)
+  const thisAccountTransactionsTo = transactions.transactions.filter(transaction => transaction.account_to === thisAccount?.name) // use || ???
+  const thisAccountTransactionsFrom = transactions.transactions.filter(transaction => transaction.account_from === thisAccount?.name)
   const thisAccountTransactions = thisAccountTransactionsFrom.concat(thisAccountTransactionsTo)
 
-  const deleteThisAccout = () => {
-    dispatch(deleteAccount(thisAccount!.id))
-    navigate('/accounts')
-  }
 
   const getTransactionTarget = (transaction: Transaction, thisAccount: Account) => {
     if (transaction.account_from === thisAccount.name) {
@@ -43,7 +47,7 @@ const AccountOverview: React.FC = () => {
   };
 
 
-  if (accounts.error || accounts.loading || !thisAccount){
+  if (accounts.error || accounts.loading || !thisAccount ){
     return (
       <div className='fle flex-col space-y-2'>
         <Title name='Account Overview'/>
@@ -59,6 +63,9 @@ const AccountOverview: React.FC = () => {
   return (
     <div className='fle flex-col space-y-2'>
         <Title name='Account Overview'/>
+        <Button type={'button'} variant={'link'} onClick={() => navigate('/accounts')}>
+          <CircleChevronLeft/> Back to Accounts
+        </Button>
 
         <AccountCard account={thisAccount}/>
 
@@ -66,7 +73,7 @@ const AccountOverview: React.FC = () => {
           <h2 className="text-xl m-5 text-primary">Latest Account transactions:</h2>
         }
 
-        <div className="max-h-[30vh] overflow-y-auto">
+        <div className="max-h-[60vh] overflow-y-auto">
           {thisAccountTransactions.map(transaction =>
 
           <Card key={transaction.id} className='mx-4 my-0.5'>
@@ -89,21 +96,7 @@ const AccountOverview: React.FC = () => {
               </div>
           </Card> 
           )}
-            
         </div>
-        
-
-
-        
-        <Button 
-        type={'button'} 
-        variant={'link'} 
-        className='justify-start text-lg text-red-800 py-4 mx-1'
-        onClick={deleteThisAccout}>
-            Delete Account
-        </Button>
-
-        
     </div>
   )
 }
