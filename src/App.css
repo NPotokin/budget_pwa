@@ -1,28 +1,27 @@
 /* styles.css */
 body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-  }
-  
-  .mobile-only {
-    display: block;
-  }
-  
-  .desktop-message {
-    display: none;
-  }
-  
-  @media (min-width: 768px) {
-    .mobile-only {
-      display: none;
-    }
-  
-    .desktop-message {
-      display: block;
-      text-align: center;
-      margin-top: 50px;
-      font-size: 18px;
-      color: gray;
-    }
-  }
-  
+	margin: 0;
+	font-family: Arial, sans-serif;
+}
+
+.mobile-only {
+	display: block;
+}
+
+.desktop-message {
+	display: none;
+}
+
+@media (min-width: 768px) {
+	.mobile-only {
+		display: none;
+	}
+
+	.desktop-message {
+		display: block;
+		text-align: center;
+		margin-top: 50px;
+		font-size: 18px;
+		color: gray;
+	}
+}

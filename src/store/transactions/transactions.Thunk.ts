@@ -3,23 +3,23 @@ import { supabase } from '../../supabaseClient';
 import { Transaction } from './transactionsSlice';
 
 export const fetchAllTransactions = createAsyncThunk(
-  "transactions/fetchAllTransactions",
-  async (_, { rejectWithValue }) => {
-    try {
-      // Get the first and last day of the current month
-      const now = new Date();
-      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+	'transactions/fetchAllTransactions',
+	async (_, { rejectWithValue }) => {
+		try {
+			// Get the first and last day of the current month
+			const now = new Date();
+			const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+			const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
 
-      // Convert to ISO format for database filtering
-      const firstDayISO = firstDay.toISOString();
-      const lastDayISO = lastDay.toISOString();
+			// Convert to ISO format for database filtering
+			const firstDayISO = firstDay.toISOString();
+			const lastDayISO = lastDay.toISOString();
 
-      // Fetch transactions for the current month
-      const { data, error } = await supabase
-        .from("transactions")
-        .select(
-          `
+			// Fetch transactions for the current month
+			const { data, error } = await supabase
+				.from('transactions')
+				.select(
+					`
           id, 
           amount, 
           comment, 
@@ -28,120 +28,139 @@ export const fetchAllTransactions = createAsyncThunk(
           account_to:accounts!transactions_account_to_fkey(id, name),
           category:categories!transactions_category_fkey(id, name)
         `
-        )
-        .gte("date", firstDayISO)
-        .lte("date", lastDayISO); // Filter transactions by current month
+				)
+				.gte('date', firstDayISO)
+				.lte('date', lastDayISO);
 
-      if (error) throw error;
+			if (error) throw error;
 
-      return data.map((t) => ({
-        id: t.id,
-        date: t.date,
-        amount: t.amount,
-        //@ts-expect-error mismatch
-        account_from: t.account_from?.name || null,
-        ///@ts-expect-error mismatch
-        account_to: t.account_to?.name || null,
-       //@ts-expect-error mismatch
-        category: t.category?.name || null,
-        comment: t.comment,
-      }));
-    } catch (e) {
-      return rejectWithValue(e);
-    }
-  }
+			return data.map((t) => ({
+				id: t.id,
+				date: t.date,
+				amount: t.amount,
+				//@ts-expect-error mismatch
+				account_from: t.account_from?.name || null,
+				///@ts-expect-error mismatch
+				account_to: t.account_to?.name || null,
+				//@ts-expect-error mismatch
+				category: t.category?.name || null,
+				comment: t.comment,
+			}));
+		} catch (e) {
+			return rejectWithValue(e);
+		}
+	}
 );
-
 
 export const addTransaction = createAsyncThunk(
-  "transactions/addTransaction",
-  async (transaction: Transaction, { rejectWithValue }) => {
-    try {
-      const { data, error } = await supabase
-        .from("transactions")
-        .insert([transaction])
-        .select()
-        .single();
+	'transactions/addTransaction',
+	async (transaction: Transaction, { rejectWithValue }) => {
+		try {
+			const { data, error } = await supabase.from('transactions').insert([transaction]).select().single();
 
-      if (error) throw error; 
+			if (error) throw error;
 
-      if (!transaction.account_to) { // spending
-        const { data: accountData, error: accountError } = await supabase
-          .from("accounts")
-          .select("balance")
-          .eq("id", transaction.account_from)
-          .single();
+			if (!transaction.account_to) {
+				// spending
+				const { data: accountData, error: accountError } = await supabase
+					.from('accounts')
+					.select('balance')
+					.eq('id', transaction.account_from)
+					.single();
 
-        if (accountError) throw accountError; 
-        
-        const newBalance = accountData.balance - transaction.amount!;
-        const { error: updateBalanceError } = await supabase
-          .from("accounts")
-          .update({ balance: newBalance })
-          .eq("id", transaction.account_from);
+				if (accountError) throw accountError;
 
-        if (updateBalanceError) throw updateBalanceError; 
-      }
+				const newBalance = accountData.balance - transaction.amount!;
+				const { error: updateBalanceError } = await supabase
+					.from('accounts')
+					.update({ balance: newBalance })
+					.eq('id', transaction.account_from);
 
-      if (!transaction.account_from) { // earning
-        const { data: accountData, error: accountError } = await supabase
-          .from("accounts")
-          .select("balance")
-          .eq("id", transaction.account_to)
-          .single();
+				if (updateBalanceError) throw updateBalanceError;
+			}
 
-        if (accountError) throw accountError; 
-        
-        const newBalance = accountData.balance + transaction.amount!;
-        const { error: updateBalanceError } = await supabase
-          .from("accounts")
-          .update({ balance: newBalance })
-          .eq("id", transaction.account_to);
+			if (!transaction.account_from) {
+				// earning
+				const { data: accountData, error: accountError } = await supabase
+					.from('accounts')
+					.select('balance')
+					.eq('id', transaction.account_to)
+					.single();
 
-        if (updateBalanceError) throw updateBalanceError; 
-      }
+				if (accountError) throw accountError;
 
-      if (!transaction.category) { // between accounts
-        const { data: accountDataFrom, error: accountFromError } = await supabase
-          .from("accounts")
-          .select("balance")
-          .eq("id", transaction.account_from)
-          .single();
+				const newBalance = accountData.balance + transaction.amount!;
+				const { error: updateBalanceError } = await supabase
+					.from('accounts')
+					.update({ balance: newBalance })
+					.eq('id', transaction.account_to);
 
-        if (accountFromError) throw accountFromError; 
+				if (updateBalanceError) throw updateBalanceError;
+			}
 
-        const { data: accountDataTo, error: accountToError } = await supabase
-          .from("accounts")
-          .select("balance")
-          .eq("id", transaction.account_to)
-          .single();
+			if (!transaction.category) {
+				// between accounts
+				const { data: accountDataFrom, error: accountFromError } = await supabase
+					.from('accounts')
+					.select('balance')
+					.eq('id', transaction.account_from)
+					.single();
 
-        if (accountToError) throw accountToError; 
-        
-        const newBalanceFrom = accountDataFrom.balance - transaction.amount!;
-        const { error: updateBalanceFromError } = await supabase
-          .from("accounts")
-          .update({ balance: newBalanceFrom })
-          .eq("id", transaction.account_from);
+				if (accountFromError) throw accountFromError;
 
-        if (updateBalanceFromError) throw updateBalanceFromError; 
+				const { data: accountDataTo, error: accountToError } = await supabase
+					.from('accounts')
+					.select('balance')
+					.eq('id', transaction.account_to)
+					.single();
 
-        const newBalanceTo = accountDataTo.balance + transaction.amount!;
-        const { error: updateBalanceToError } = await supabase
-          .from("accounts")
-          .update({ balance: newBalanceTo })
-          .eq("id", transaction.account_to);
+				if (accountToError) throw accountToError;
 
-        if (updateBalanceToError) throw updateBalanceToError; 
-      }
+				const newBalanceFrom = accountDataFrom.balance - transaction.amount!;
+				const { error: updateBalanceFromError } = await supabase
+					.from('accounts')
+					.update({ balance: newBalanceFrom })
+					.eq('id', transaction.account_from);
 
-      return data; 
-    } catch (err) {
-      return rejectWithValue(err);
-    }
-  }
+				if (updateBalanceFromError) throw updateBalanceFromError;
+
+				const newBalanceTo = accountDataTo.balance + transaction.amount!;
+				const { error: updateBalanceToError } = await supabase
+					.from('accounts')
+					.update({ balance: newBalanceTo })
+					.eq('id', transaction.account_to);
+
+				if (updateBalanceToError) throw updateBalanceToError;
+			}
+
+			return data;
+		} catch (err) {
+			return rejectWithValue(err);
+		}
+	}
 );
 
+export const updateTransactionComment = createAsyncThunk(
+	'accounts/updateTransactionComment',
+	async ({ id, comment }: { id: string; comment: string }) => {
+		const { data, error } = await supabase.from('transactions').update({ comment }).eq('id', id).select().single();
+		if (error) throw error;
+		console.log(data);
+		return data as Transaction;
+	}
+);
 
+export const updateTransactionAmount = createAsyncThunk(
+	'accounts/updateTransactionAmount',
+	async ({ id, amount }: { id: string; amount: number }) => {
+		const { data, error } = await supabase.from('transactions').update({ amount }).eq('id', id).select().single();
+		if (error) throw error;
+		return data as Transaction;
+	}
+);
 
-
+export const deleteTransaction = createAsyncThunk('accounts/deleteTransaction', async (transactionId: string) => {
+	const { error } = await supabase.from('transactions').delete().eq('id', transactionId);
+	if (error) throw error;
+	return transactionId;
+});

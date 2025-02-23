@@ -18,6 +18,8 @@ import CategoryOverview from './pages/Categories/CategoryOverview';
 import RecentTransactions from './pages/Transactions/RecentTransactions';
 import EditAccount from './pages/Accounts/EditAccount';
 import EditCategory from './pages/Categories/EditCategory';
+import NotFoundPage from './pages/NotFound/NotFoundPage';
+import { TransactionOverview } from './pages/Transactions/TransactionOverview';
 
 const App = () => {
 	return (
@@ -28,6 +30,7 @@ const App = () => {
 			<div className="mobile-only">
 				<Router>
 					<Routes>
+						<Route path="*" element={<NotFoundPage />} />
 						<Route path="login" element={<Login />} />
 						<Route path="recover" element={<Recovery />} />
 						<Route path="reset" element={<ChangePassword />} />
@@ -46,25 +49,17 @@ const App = () => {
 
 							<Route index element={<Transactions />} />
 							<Route path="transactions" element={<RecentTransactions />} />
+							<Route path="transactions/:transactionId" element={<TransactionOverview />} />
 
 							<Route path="accounts" element={<Accounts />} />
 							<Route path="accounts/add" element={<AddAccount />} />
 							<Route path="accounts/:accountId" element={<AccountOverview />} />
-							<Route
-								path="accounts/edit/:accountId"
-								element={<EditAccount />}
-							/>
+							<Route path="accounts/edit/:accountId" element={<EditAccount />} />
 
 							<Route path="categories" element={<Categories />} />
 							<Route path="categories/add" element={<CategoryAdd />} />
-							<Route
-								path="categories/:categoryId"
-								element={<CategoryOverview />}
-							/>
-							<Route
-								path="categories/edit/:categoryId"
-								element={<EditCategory />}
-							/>
+							<Route path="categories/:categoryId" element={<CategoryOverview />} />
+							<Route path="categories/edit/:categoryId" element={<EditCategory />} />
 						</Route>
 					</Routes>
 				</Router>

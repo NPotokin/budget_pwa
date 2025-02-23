@@ -4,14 +4,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import Title from '@/components/ui/title';
 import { useDispatch } from 'react-redux';
@@ -75,12 +68,7 @@ const AddAccount: React.FC = () => {
 	return (
 		<div className="flex flex-col space-y-6">
 			<Title name="Add Account" />
-			<Button
-				type={'button'}
-				variant={'link'}
-				className="justify-start"
-				onClick={() => navigate('/accounts')}
-			>
+			<Button type={'button'} variant={'link'} className="justify-start" onClick={() => navigate('/accounts')}>
 				<CircleChevronLeft /> Back to Accounts
 			</Button>
 
@@ -110,11 +98,7 @@ const AddAccount: React.FC = () => {
 							<FormItem>
 								<FormLabel>Account Balance</FormLabel>
 								<FormControl>
-									<Input
-										placeholder="Enter account balance"
-										type="text"
-										{...field}
-									/>
+									<Input placeholder="Enter account balance" type="text" {...field} />
 								</FormControl>
 
 								<FormMessage />
@@ -123,11 +107,7 @@ const AddAccount: React.FC = () => {
 					/>
 
 					{/* Submit Button */}
-					<Button
-						type="submit"
-						variant={'default'}
-						className="mx-4 py-6 w-[90vw]"
-					>
+					<Button type="submit" variant={'default'} className="mx-4 py-6 w-[90vw]">
 						Add Account
 					</Button>
 				</form>

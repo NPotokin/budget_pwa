@@ -1,44 +1,44 @@
-import React, { ReactNode, useEffect, useState } from "react";
-import { Navigate, Session } from "react-router-dom";
-import { supabase } from "../../supabaseClient";
-import { Title } from "@radix-ui/react-toast";
-import { AccountCardSkeleton } from "@/pages/Accounts/AccountCardSkeleton";
+import React, { ReactNode, useEffect, useState } from 'react';
+import { Navigate, Session } from 'react-router-dom';
+import { supabase } from '../../supabaseClient';
+import { Title } from '@radix-ui/react-toast';
+import { AccountCardSkeleton } from '@/pages/Accounts/AccountCardSkeleton';
 
 interface ProtectedRouteProps {
-  children: ReactNode;
+	children: ReactNode;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const [loading, setLoading] = useState<boolean>(true);
-  const [session, setSession] = useState<Session | null>(null);
+	const [loading, setLoading] = useState<boolean>(true);
+	const [session, setSession] = useState<Session | null>(null);
 
-  useEffect(() => {
-    const getSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      setSession(session as unknown as Session);
-      setLoading(false);
-    };
+	useEffect(() => {
+		const getSession = async () => {
+			const {
+				data: { session },
+			} = await supabase.auth.getSession();
+			setSession(session as unknown as Session);
+			setLoading(false);
+		};
 
-    getSession();
-  }, []);
+		getSession();
+	}, []);
 
-  if (loading) {
-    return (
-      <div className="flex flex-col mx-4">
-        <Title title="Loading..."/>
-        <AccountCardSkeleton/>
-        <AccountCardSkeleton/>
-      </div>
-    );
-  }
+	if (loading) {
+		return (
+			<div className="flex flex-col mx-4 space-y-8">
+				<Title title="Loading..." />
+				<AccountCardSkeleton />
+				<AccountCardSkeleton />
+			</div>
+		);
+	}
 
-  if (!session) {
-    return <Navigate to="/login" />;
-  }
+	if (!session) {
+		return <Navigate to="/login" />;
+	}
 
-  return <>{children}</>; 
+	return <>{children}</>;
 };
 
 export default ProtectedRoute;
