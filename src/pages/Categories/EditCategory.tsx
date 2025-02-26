@@ -15,7 +15,7 @@ import { CircleChevronLeft } from 'lucide-react';
 import { Category } from '@/store/categories/catgoriesSlice';
 import {
 	deleteCategory,
-	fetchCategories,
+	fetchCategoriesThisMonth,
 	updateCategoryLimit,
 	updateCategoryName,
 } from '@/store/categories/categories.Thunk';
@@ -53,18 +53,18 @@ const EditCategory: React.FC = () => {
 	});
 
 	useEffect(() => {
-		if (!category) dispatch(fetchCategories());
+		if (!category) dispatch(fetchCategoriesThisMonth());
 	}, [category, dispatch]);
 
 	const handleUpdateName = async (data: { name: string }) => {
 		await dispatch(updateCategoryName({ id: category.id, name: data.name }));
-		await dispatch(fetchCategories());
+		await dispatch(fetchCategoriesThisMonth());
 		setIsEditingName(false);
 	};
 
 	const handleUpdateLimit = async (data: { limit: number }) => {
 		await dispatch(updateCategoryLimit({ id: category.id, category_limit: data.limit }));
-		await dispatch(fetchCategories());
+		await dispatch(fetchCategoriesThisMonth());
 		setIsEditingLimit(false);
 	};
 

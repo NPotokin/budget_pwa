@@ -3,6 +3,7 @@ import {
 	addCategory,
 	deleteCategory,
 	fetchCategories,
+	fetchCategoriesThisMonth,
 	updateCategoryLimit,
 	updateCategoryName,
 } from './categories.Thunk';
@@ -39,6 +40,19 @@ const categoriesSlice = createSlice({
 				state.categories = action.payload;
 			})
 			.addCase(fetchCategories.rejected, (state, action) => {
+				state.loading = false;
+				state.error = action.error.message || 'Failed to fetch profile';
+			})
+
+			.addCase(fetchCategoriesThisMonth.pending, (state) => {
+				state.loading = true;
+				state.error = null;
+			})
+			.addCase(fetchCategoriesThisMonth.fulfilled, (state, action) => {
+				state.loading = false;
+				state.categories = action.payload;
+			})
+			.addCase(fetchCategoriesThisMonth.rejected, (state, action) => {
 				state.loading = false;
 				state.error = action.error.message || 'Failed to fetch profile';
 			})

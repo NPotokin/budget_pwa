@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
 	deleteTransaction,
 	fetchAllTransactions,
+	fetchOneTransaction,
 	updateTransactionAmount,
 	updateTransactionComment,
 } from './transactions.Thunk';
@@ -11,12 +12,15 @@ export type Transaction = Tables<'transactions'>;
 
 interface TransactionState {
 	transactions: Transaction[];
+	currentTransaction: Transaction,
 	loading: boolean;
 	error: string | null;
 }
 
 const initialState: TransactionState = {
 	transactions: [],
+	//@ts-expect-error types
+	currentTransaction: {},
 	loading: false,
 	error: null,
 };
@@ -82,6 +86,21 @@ const transactionsSlice = createSlice({
 				state.transactions = state.transactions.filter((tr) => tr.id !== action.payload);
 			})
 			.addCase(deleteTransaction.rejected, (state, action) => {
+				state.loading = false;
+				state.error = action.error.message || 'Failed to delete transaction';
+			})
+
+			.addCase(fetchOneTransaction.pending, (state) => {
+				state.loading = true;
+				state.error = null;
+			})
+			.addCase(fetchOneTransaction.fulfilled, (state, action) => {
+				state.loading = false;
+				//@ts-expect-error mismatch
+				state.currentTransaction = action.payload
+				}
+			)
+			.addCase(fetchOneTransaction.rejected, (state, action) => {
 				state.loading = false;
 				state.error = action.error.message || 'Failed to delete transaction';
 			});

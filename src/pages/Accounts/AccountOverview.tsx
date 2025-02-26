@@ -3,7 +3,7 @@ import Title from '@/components/ui/title';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useTypedSelector } from '@/hooks/useTypedSelector';
 import { fetchAccounts } from '@/store/accounts/accounts.Thunk';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AccountCard } from './AccountCard';
 import { AccountCardSkeleton } from './AccountCardSkeleton';
@@ -12,6 +12,7 @@ import { fetchAllTransactions } from '@/store/transactions/transactions.Thunk';
 import { Transaction } from '@/store/transactions/transactionsSlice';
 import { Account } from '@/store/accounts/accountsSlice';
 import { CircleChevronLeft } from 'lucide-react';
+import { MonthSelector } from '@/components/ui/monthSelector';
 
 const AccountOverview: React.FC = () => {
 	const dispatch = useAppDispatch();
@@ -19,17 +20,26 @@ const AccountOverview: React.FC = () => {
 	const accounts = useTypedSelector((state) => state.accounts);
 	const transactions = useTypedSelector((state) => state.transactions);
 
+	const [selectedDate, setSelectedDate] = useState(new Date());
+
 	useEffect(() => {
-		const checkAccountsAndTransactions = async () => {
-			if (accounts.list.length === 0) {
-				await dispatch(fetchAccounts());
-			}
-			if (transactions.transactions.length === 0) {
-				await dispatch(fetchAllTransactions());
-			}
-		};
-		checkAccountsAndTransactions();
-	}, [dispatch, accounts, transactions.transactions.length]);
+		dispatch(
+			fetchAccounts({
+				month: selectedDate.getMonth() + 1,
+				year: selectedDate.getFullYear(),
+			})
+		);
+		dispatch(
+			fetchAllTransactions({
+				month: selectedDate.getMonth() + 1,
+				year: selectedDate.getFullYear(),
+			})
+		);
+	}, [selectedDate, dispatch])
+
+	const handleMonthChange = (newDate: Date) => {
+		setSelectedDate(newDate);
+	};
 
 	const { accountId } = useParams();
 
@@ -69,6 +79,8 @@ const AccountOverview: React.FC = () => {
 			</Button>
 
 			<AccountCard account={thisAccount} />
+			<MonthSelector selectedDate={selectedDate} onMonthChange={handleMonthChange} />
+
 
 			{thisAccountTransactions[0] && <h2 className="text-xl m-5 text-primary">Latest Account transactions:</h2>}
 
@@ -103,7 +115,7 @@ const AccountOverview: React.FC = () => {
 							</div>
 						</div>
 					</Card>
-				))}
+				)).reverse()}
 			</div>
 		</div>
 	);

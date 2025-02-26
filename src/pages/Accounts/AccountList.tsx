@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AccountCardSkeleton } from './AccountCardSkeleton';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useTypedSelector } from '@/hooks/useTypedSelector';
-import { fetchAccounts } from '@/store/accounts/accounts.Thunk';
+import { fetchAccountsThisMonth } from '@/store/accounts/accounts.Thunk';
 import { useEffect } from 'react';
 
 export const AccountList: React.FC = () => {
@@ -11,8 +11,12 @@ export const AccountList: React.FC = () => {
 	const dispatch = useAppDispatch();
 	const accounts = useTypedSelector((state) => state.accounts);
 
+	
+
 	useEffect(() => {
-		dispatch(fetchAccounts());
+		dispatch(
+			fetchAccountsThisMonth()
+		);
 	}, [dispatch]);
 
 	if (accounts.error || accounts.loading) {

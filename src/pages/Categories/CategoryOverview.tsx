@@ -3,32 +3,38 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/ca
 import Title from '@/components/ui/title';
 import { useTypedSelector } from '@/hooks/useTypedSelector';
 import { fetchCategories } from '@/store/categories/categories.Thunk';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchAllTransactions } from '@/store/transactions/transactions.Thunk';
 import { AccountCardSkeleton } from '../Accounts/AccountCardSkeleton';
 import { CircleChevronLeft, Settings } from 'lucide-react';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { MonthSelector } from '@/components/ui/monthSelector';
 
 const CategoryOverview: React.FC = () => {
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 	const categories = useTypedSelector((state) => state.categories);
 	const transactions = useTypedSelector((state) => state.transactions);
+	const [selectedDate, setSelectedDate] = useState(new Date());
 
 	useEffect(() => {
-		const checkCayegoriesAndTransacions = async () => {
-			if (categories.categories.length === 0) {
-				await dispatch(fetchCategories());
-			}
-			if (transactions.transactions.length === 0) {
-				await dispatch(fetchAllTransactions());
-			}
-		};
-		checkCayegoriesAndTransacions();
-	}, [dispatch, categories, transactions.transactions.length]);
+		dispatch(fetchCategories({
+			month: selectedDate.getMonth() + 1,
+			year: selectedDate.getFullYear(),
+		}));
+		dispatch(fetchAllTransactions({
+			month: selectedDate.getMonth() + 1,
+			year: selectedDate.getFullYear(),
+		}));
+			
+	}, [dispatch, selectedDate]);
 
 	const { categoryId } = useParams();
+
+	const handleMonthChange = (newDate: Date) => {
+		setSelectedDate(newDate);
+	};
 
 	const thisCategory = categories.categories.find((category) => category.id === categoryId);
 	const thisCategoryTransactions = transactions.transactions.filter((tr) => tr.category === thisCategory?.name);
@@ -87,6 +93,8 @@ const CategoryOverview: React.FC = () => {
 					</div>
 				</CardHeader>
 			</Card>
+			<MonthSelector selectedDate={selectedDate} onMonthChange={handleMonthChange} />
+
 
 			{thisCategoryTransactions[0] && <h2 className="text-xl m-4 text-primary">Latest transactions</h2>}
 
@@ -118,7 +126,7 @@ const CategoryOverview: React.FC = () => {
 						</div>
 					</div>
 				</Card>
-			))}
+			)).reverse()}
 		</div>
 	);
 };

@@ -2,49 +2,107 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { supabase } from '../../supabaseClient';
 import { Category } from './catgoriesSlice';
 
-export const fetchCategories = createAsyncThunk('categories/fetchCategories', async (_, { rejectWithValue }) => {
-	try {
-		const now = new Date();
-		const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-		const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+export const fetchCategories = createAsyncThunk(
+	'categories/fetchCategories',
+	async ({ month, year }: { month: number; year: number }, { rejectWithValue }) => {
+		try {
+			console.log(`Fetching categories for ${month}/${year}`); // Debugging log
 
-		const firstDayISO = firstDay.toISOString();
-		const lastDayISO = lastDay.toISOString();
+			const firstDay = new Date(year, month - 1, 1);
+			const lastDay = new Date(year, month, 0, 23, 59, 59);
 
-		const { data: categories, error: categoriesError } = await supabase.from('categories').select('*');
+			const firstDayISO = firstDay.toISOString();
+			const lastDayISO = lastDay.toISOString();
 
-		if (categoriesError) throw categoriesError;
+			// Fetch categories
+			const { data: categories, error: categoriesError } = await supabase.from('categories').select('*');
+			if (categoriesError) throw categoriesError;
 
-		const { data: transactions, error: transactionsError } = await supabase
-			.from('transactions')
-			.select('id, amount, category')
-			.gte('date', firstDayISO)
-			.lte('date', lastDayISO);
+			// Fetch transactions within the selected month
+			const { data: transactions, error: transactionsError } = await supabase
+				.from('transactions')
+				.select('id, amount, category')
+				.gte('date', firstDayISO)
+				.lte('date', lastDayISO);
 
-		if (transactionsError) throw transactionsError;
+			if (transactionsError) throw transactionsError;
 
-		const categoriesStats: Record<string, { used: number }> = {};
+			// Initialize category stats
+			const categoriesStats: Record<string, { used: number }> = {};
+			categories.forEach((category) => {
+				categoriesStats[category.id] = { used: 0 };
+			});
 
-		categories.forEach((category) => {
-			categoriesStats[category.id] = { used: 0 };
-		});
+			// Calculate usage per category
+			transactions.forEach((tx) => {
+				if (tx.category && categoriesStats[tx.category]) {
+					categoriesStats[tx.category].used += tx.amount;
+				}
+			});
 
-		transactions.forEach((tx) => {
-			if (tx.category && categoriesStats[tx.category]) {
-				categoriesStats[tx.category].used += tx.amount;
-			}
-		});
+			// Attach stats to categories
+			const categoriesWithStats: Category[] = categories.map((category) => ({
+				...category,
+				used: categoriesStats[category.id]?.used || 0,
+			}));
 
-		const categoriesWithStats: Category[] = categories.map((category) => ({
-			...category,
-			used: categoriesStats[category.id]?.used || 0,
-		}));
-
-		return categoriesWithStats;
-	} catch (error: unknown) {
-		return rejectWithValue(error);
+			return categoriesWithStats;
+		} catch (error) {
+			return rejectWithValue(error);
+		}
 	}
-});
+);
+
+export const fetchCategoriesThisMonth = createAsyncThunk(
+	'categories/fetchCategoriesThisMonth',
+	async (_, { rejectWithValue }) => {
+		try {
+			const now = new Date();
+			const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+			const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+
+
+			const firstDayISO = firstDay.toISOString();
+			const lastDayISO = lastDay.toISOString();
+
+			// Fetch categories
+			const { data: categories, error: categoriesError } = await supabase.from('categories').select('*');
+			if (categoriesError) throw categoriesError;
+
+			// Fetch transactions within the selected month
+			const { data: transactions, error: transactionsError } = await supabase
+				.from('transactions')
+				.select('id, amount, category')
+				.gte('date', firstDayISO)
+				.lte('date', lastDayISO);
+
+			if (transactionsError) throw transactionsError;
+
+			// Initialize category stats
+			const categoriesStats: Record<string, { used: number }> = {};
+			categories.forEach((category) => {
+				categoriesStats[category.id] = { used: 0 };
+			});
+
+			// Calculate usage per category
+			transactions.forEach((tx) => {
+				if (tx.category && categoriesStats[tx.category]) {
+					categoriesStats[tx.category].used += tx.amount;
+				}
+			});
+
+			// Attach stats to categories
+			const categoriesWithStats: Category[] = categories.map((category) => ({
+				...category,
+				used: categoriesStats[category.id]?.used || 0,
+			}));
+
+			return categoriesWithStats;
+		} catch (error) {
+			return rejectWithValue(error);
+		}
+	}
+);
 
 export const addCategory = createAsyncThunk<Category, Category>(
 	'categories/addCategory',

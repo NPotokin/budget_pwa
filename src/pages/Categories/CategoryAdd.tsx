@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -11,11 +9,10 @@ import { Input } from '@/components/ui/input';
 import Title from '@/components/ui/title';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '@/store/store';
 import { addCategory } from '@/store/categories/categories.Thunk';
 import { Category } from '@/store/categories/catgoriesSlice';
 import { CircleChevronLeft } from 'lucide-react';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 // Define the schema for form validation
 const FormSchema = z.object({
@@ -42,7 +39,7 @@ const CategoryAdd: React.FC = () => {
 	});
 
 	const navigate = useNavigate();
-	const dispatch = useDispatch<AppDispatch>();
+	const dispatch = useAppDispatch()
 
 	function onSubmit(data: z.infer<typeof FormSchema>) {
 		console.log(data);

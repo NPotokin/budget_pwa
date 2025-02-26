@@ -2,8 +2,8 @@ import { Button } from '@/components/ui/button';
 import Title from '@/components/ui/title';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useTypedSelector } from '@/hooks/useTypedSelector';
-import { fetchCategories } from '@/store/categories/categories.Thunk';
-import React, { useEffect } from 'react';
+import { fetchCategoriesThisMonth } from '@/store/categories/categories.Thunk';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CategoryCard } from './CategoryCard';
 import { AccountCardSkeleton } from '../Accounts/AccountCardSkeleton';
@@ -12,10 +12,12 @@ const Categories: React.FC = () => {
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
 	const categories = useTypedSelector((state) => state.categories);
+	const [selectedDate] = useState(new Date());
+	
 
 	useEffect(() => {
-		dispatch(fetchCategories());
-	}, [dispatch]);
+		dispatch(fetchCategoriesThisMonth())
+	}, [dispatch, selectedDate]);
 
 	if (categories.error || categories.loading) {
 		return (

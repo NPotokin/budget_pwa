@@ -1,7 +1,7 @@
 // accountsSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Tables } from '../../../database.types';
-import { fetchAccounts, createAccount, deleteAccount, updateAccountName, updateAccountBalance } from './accounts.Thunk';
+import { fetchAccounts, createAccount, deleteAccount, updateAccountName, updateAccountBalance, fetchAccountsThisMonth } from './accounts.Thunk';
 
 export type Account = Tables<'accounts'> & {
 	spending: number;
@@ -34,6 +34,19 @@ const accountsSlice = createSlice({
 				state.list = action.payload;
 			})
 			.addCase(fetchAccounts.rejected, (state, action) => {
+				state.loading = false;
+				state.error = action.error.message || 'Failed to fetch accounts';
+			})
+
+			.addCase(fetchAccountsThisMonth.pending, (state) => {
+				state.loading = true;
+				state.error = null;
+			})
+			.addCase(fetchAccountsThisMonth.fulfilled, (state, action: PayloadAction<Account[]>) => {
+				state.loading = false;
+				state.list = action.payload;
+			})
+			.addCase(fetchAccountsThisMonth.rejected, (state, action) => {
 				state.loading = false;
 				state.error = action.error.message || 'Failed to fetch accounts';
 			})

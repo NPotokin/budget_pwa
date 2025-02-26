@@ -10,12 +10,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useTypedSelector } from '@/hooks/useTypedSelector';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { AccountCardSkeleton } from '../Accounts/AccountCardSkeleton';
 import {
 	updateTransactionAmount,
 	updateTransactionComment,
 	deleteTransaction,
-	fetchAllTransactions,
+	fetchOneTransaction,
 } from '@/store/transactions/transactions.Thunk';
 import { CircleChevronLeft } from 'lucide-react';
 
@@ -23,15 +22,14 @@ export const TransactionOverview: React.FC = () => {
 	const navigate = useNavigate();
 	const { transactionId } = useParams();
 	const dispatch = useAppDispatch();
-	const transactions = useTypedSelector((state) => state.transactions);
-	const transaction = transactions.transactions.find((tr) => tr.id === transactionId);
+	const transaction = useTypedSelector((state) => state.transactions.currentTransaction);
 
 	const [isEditingAmount, setIsEditingAmount] = useState(false);
 	const [isEditingComment, setIsEditingComment] = useState(false);
 
 	useEffect(() => {
-		dispatch(fetchAllTransactions());
-	}, [dispatch]);
+		dispatch(fetchOneTransaction(transactionId!));
+	}, [dispatch,transactionId]);
 
 	const amountForm = useForm<{ amount: number }>({
 		resolver: zodResolver(
@@ -61,7 +59,7 @@ export const TransactionOverview: React.FC = () => {
 				amount: data.amount,
 			})
 		);
-		await dispatch(fetchAllTransactions());
+		await dispatch(fetchOneTransaction(transactionId!));
 		setIsEditingAmount(false);
 	};
 
@@ -72,7 +70,7 @@ export const TransactionOverview: React.FC = () => {
 				comment: data.comment,
 			})
 		);
-		await dispatch(fetchAllTransactions());
+		await dispatch(fetchOneTransaction(transactionId!));
 		setIsEditingComment(false);
 	};
 
@@ -80,17 +78,6 @@ export const TransactionOverview: React.FC = () => {
 		dispatch(deleteTransaction(transactionId as string));
 		navigate('/');
 	};
-
-	if (transactions.loading || transactions.error) {
-		return (
-			<div className="flex flex-col space-y-4">
-				<Title name="Transaction Overview" />
-				<AccountCardSkeleton />
-				<AccountCardSkeleton />
-				<AccountCardSkeleton />
-			</div>
-		);
-	}
 
 	if (!transaction) {
 		return <p className="text-red-500">Transaction not found</p>;

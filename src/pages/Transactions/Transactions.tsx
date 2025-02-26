@@ -6,9 +6,9 @@ import { Textarea } from '@/components/ui/textarea';
 import Title from '@/components/ui/title';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useTypedSelector } from '@/hooks/useTypedSelector';
-import { fetchAccounts } from '@/store/accounts/accounts.Thunk';
+import { fetchAccountsThisMonth } from '@/store/accounts/accounts.Thunk';
 import { Account } from '@/store/accounts/accountsSlice';
-import { fetchCategories } from '@/store/categories/categories.Thunk';
+import { fetchCategoriesThisMonth } from '@/store/categories/categories.Thunk';
 import { Category } from '@/store/categories/catgoriesSlice';
 import { addTransaction } from '@/store/transactions/transactions.Thunk';
 import { Transaction } from '@/store/transactions/transactionsSlice';
@@ -40,8 +40,8 @@ const Transactions: React.FC = () => {
 	});
 
 	useEffect(() => {
-		dispatch(fetchAccounts());
-		dispatch(fetchCategories());
+		dispatch(fetchAccountsThisMonth());
+		dispatch(fetchCategoriesThisMonth());
 	}, [dispatch]);
 
 	const handleSpending = () => {
@@ -55,9 +55,20 @@ const Transactions: React.FC = () => {
 		}));
 	};
 
+	const handleEarning = () => {
+		setSelectedFrom(categoriesEarning);
+		setSelectedTo(accounts);
+		setTransaction((prev) => ({
+			...prev,
+			account_from: null,
+			category: '',
+			account_to: '',
+		}));
+	};
+
 	const handleTransfer = () => {
 		setSelectedFrom(accounts);
-		setSelectedTo(accounts.filter((acc) => acc.id !== transaction.account_from));
+		setSelectedTo(accounts);
 		setTransaction((prev) => ({
 			...prev,
 			account_from: '',
@@ -67,31 +78,59 @@ const Transactions: React.FC = () => {
 	};
 
 	const handleFromChange = (value: string) => {
-		setTransaction((prev) => ({ ...prev, account_from: value }));
-
-		if (selectedTo === accounts) {
+		if (
+			Array.isArray(selectedFrom) &&
+			selectedFrom.length === categoriesEarning.length &&
+			selectedFrom.every((cat, idx) => cat.id === categoriesEarning[idx].id)
+		) {
+			setTransaction((prev) => ({
+				...prev,
+				category: value,
+			}));
+		} else if (
+			Array.isArray(selectedTo) &&
+			selectedTo.length === categoriesSpending.length &&
+			selectedTo.every((cat, idx) => cat.id === categoriesSpending[idx].id)
+		) {
+			setTransaction((prev) => ({
+				...prev,
+				account_from: value,
+			}));
+		} else {
+			setTransaction((prev) => ({
+				...prev,
+				account_from: value,
+			}));
 			setSelectedTo(accounts.filter((acc) => acc.id !== value));
 		}
 	};
 
-	// Dynamically filter the "From" list when "To" is selected
 	const handleToChange = (value: string) => {
-		setTransaction((prev) => ({ ...prev, account_to: value }));
-
-		if (selectedFrom === accounts) {
-			setSelectedFrom(accounts.filter((acc) => acc.id !== value)); // Filter "From" options in Transfer mode
+		if (
+			Array.isArray(selectedTo) &&
+			selectedTo.length === categoriesSpending.length &&
+			selectedTo.every((cat, idx) => cat.id === categoriesSpending[idx].id)
+		) {
+			setTransaction((prev) => ({
+				...prev,
+				category: value,
+			}));
+		} else if (
+			Array.isArray(selectedFrom) &&
+			selectedFrom.length === categoriesEarning.length &&
+			selectedFrom.every((cat, idx) => cat.id === categoriesEarning[idx].id)
+		) {
+			setTransaction((prev) => ({
+				...prev,
+				account_to: value,
+			}));
+		} else {
+			setTransaction((prev) => ({
+				...prev,
+				account_to: value,
+			}));
+			setSelectedFrom(accounts.filter((acc) => acc.id !== value));
 		}
-	};
-
-	const handleEarning = () => {
-		setSelectedFrom(categoriesEarning);
-		setSelectedTo(accounts);
-		setTransaction((prev) => ({
-			...prev,
-			category: '',
-			account_to: '',
-			account_from: null,
-		}));
 	};
 
 	const handleAddTransaction = async () => {
@@ -227,9 +266,11 @@ const Transactions: React.FC = () => {
 						!transaction.amount ||
 						!transaction.comment ||
 						!(
-							(transaction.account_from && transaction.account_to) || // Transfer
-							(transaction.account_from && transaction.category) || // Spending
-							(transaction.category && transaction.account_to) // Earning
+							(
+								(transaction.account_from && transaction.account_to) || // Transfer
+								(transaction.account_from && transaction.category) || // Spending
+								(transaction.category && transaction.account_to)
+							) // Earning
 						)
 					}
 					variant={'default'}
