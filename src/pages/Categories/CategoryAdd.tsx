@@ -39,7 +39,7 @@ const CategoryAdd: React.FC = () => {
 	});
 
 	const navigate = useNavigate();
-	const dispatch = useAppDispatch()
+	const dispatch = useAppDispatch();
 
 	function onSubmit(data: z.infer<typeof FormSchema>) {
 		console.log(data);

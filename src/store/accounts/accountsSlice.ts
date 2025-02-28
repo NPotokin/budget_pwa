@@ -1,7 +1,14 @@
 // accountsSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Tables } from '../../../database.types';
-import { fetchAccounts, createAccount, deleteAccount, updateAccountName, updateAccountBalance, fetchAccountsThisMonth } from './accounts.Thunk';
+import {
+	fetchAccounts,
+	createAccount,
+	deleteAccount,
+	updateAccountName,
+	updateAccountBalance,
+	fetchAccountsThisMonth,
+} from './accounts.Thunk';
 
 export type Account = Tables<'accounts'> & {
 	spending: number;

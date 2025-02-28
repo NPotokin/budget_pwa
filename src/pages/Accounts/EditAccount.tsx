@@ -6,7 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import Title from '@/components/ui/title';
-import { updateAccountName, updateAccountBalance, deleteAccount, fetchAccountsThisMonth } from '@/store/accounts/accounts.Thunk';
+import {
+	updateAccountName,
+	updateAccountBalance,
+	deleteAccount,
+	fetchAccountsThisMonth,
+} from '@/store/accounts/accounts.Thunk';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Account } from '@/store/accounts/accountsSlice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';

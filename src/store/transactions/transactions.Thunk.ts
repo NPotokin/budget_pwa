@@ -3,20 +3,21 @@ import { supabase } from '../../supabaseClient';
 import { Transaction } from './transactionsSlice';
 
 export const fetchAllTransactions = createAsyncThunk(
-	"transactions/fetchAllTransactions",
+	'transactions/fetchAllTransactions',
 	async ({ month, year }: { month: number; year: number }, { rejectWithValue }) => {
-	  try {
-		// Get first and last day of the selected month
-		const firstDay = new Date(year, month - 1, 1);
-		const lastDay = new Date(year, month, 0, 23, 59, 59);
-  
-		const firstDayISO = firstDay.toISOString();
-		const lastDayISO = lastDay.toISOString();
-  
-		// Fetch transactions for the selected month
-		const { data, error } = await supabase
-		  .from("transactions")
-		  .select(`
+		try {
+			// Get first and last day of the selected month
+			const firstDay = new Date(year, month - 1, 1);
+			const lastDay = new Date(year, month, 0, 23, 59, 59);
+
+			const firstDayISO = firstDay.toISOString();
+			const lastDayISO = lastDay.toISOString();
+
+			// Fetch transactions for the selected month
+			const { data, error } = await supabase
+				.from('transactions')
+				.select(
+					`
 			id, 
 			amount, 
 			comment, 
@@ -24,30 +25,30 @@ export const fetchAllTransactions = createAsyncThunk(
 			account_from:accounts!transactions_account_from_fkey(id, name),
 			account_to:accounts!transactions_account_to_fkey(id, name),
 			category:categories!transactions_category_fkey(id, name)
-		  `)
-		  .gte("date", firstDayISO)
-		  .lte("date", lastDayISO);
-  
-		if (error) throw error;
-  
-		return data.map((t) => ({
-		  id: t.id,
-		  date: t.date,
-		  amount: t.amount,
-		  //@ts-expect-error mismatch
-		  account_from: t.account_from?.name || null,
-		  //@ts-expect-error mismatc
-		  account_to: t.account_to?.name || null,
-		  //@ts-expect-error mismatch
-		  category: t.category?.name || null,
-		  comment: t.comment,
-		}));
-	  } catch (e) {
-		return rejectWithValue(e);
-	  }
+		  `
+				)
+				.gte('date', firstDayISO)
+				.lte('date', lastDayISO);
+
+			if (error) throw error;
+
+			return data.map((t) => ({
+				id: t.id,
+				date: t.date,
+				amount: t.amount,
+				//@ts-expect-error mismatch
+				account_from: t.account_from?.name || null,
+				//@ts-expect-error mismatc
+				account_to: t.account_to?.name || null,
+				//@ts-expect-error mismatch
+				category: t.category?.name || null,
+				comment: t.comment,
+			}));
+		} catch (e) {
+			return rejectWithValue(e);
+		}
 	}
-  );
-  
+);
 
 export const addTransaction = createAsyncThunk(
 	'transactions/addTransaction',
@@ -165,10 +166,11 @@ export const deleteTransaction = createAsyncThunk('accounts/deleteTransaction', 
 export const fetchOneTransaction = createAsyncThunk(
 	'accounts/fetchOneTransaction',
 	async (transactionId: string, { rejectWithValue }) => {
-	  try {
-		const { data, error } = await supabase
-		  .from('transactions')
-		  .select(`
+		try {
+			const { data, error } = await supabase
+				.from('transactions')
+				.select(
+					`
 			id, 
 			amount, 
 			comment, 
@@ -176,27 +178,27 @@ export const fetchOneTransaction = createAsyncThunk(
 			account_from:accounts!transactions_account_from_fkey(id, name),
 			account_to:accounts!transactions_account_to_fkey(id, name),
 			category:categories!transactions_category_fkey(id, name)
-		  `)
-		  .eq('id', transactionId)
-		  .single(); // Ensure we get a single transaction
-  
-		if (error) throw error;
-  
-		return {
-		  id: data.id,
-		  date: data.date,
-		  amount: data.amount,
-		  //@ts-expect-error mismatch
-		  account_from: data.account_from?.name || null,
-		  //@ts-expect-error mismatch
-		  account_to: data.account_to?.name || null, 
-		  //@ts-expect-error mismatch
-		  category: data.category?.name || null, 
-		  comment: data.comment,
-		};
-	  } catch (error) {
-		return rejectWithValue(error);
-	  }
+		  `
+				)
+				.eq('id', transactionId)
+				.single(); // Ensure we get a single transaction
+
+			if (error) throw error;
+
+			return {
+				id: data.id,
+				date: data.date,
+				amount: data.amount,
+				//@ts-expect-error mismatch
+				account_from: data.account_from?.name || null,
+				//@ts-expect-error mismatch
+				account_to: data.account_to?.name || null,
+				//@ts-expect-error mismatch
+				category: data.category?.name || null,
+				comment: data.comment,
+			};
+		} catch (error) {
+			return rejectWithValue(error);
+		}
 	}
-  );
-  
+);

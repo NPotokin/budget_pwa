@@ -61,7 +61,6 @@ export const fetchCategoriesThisMonth = createAsyncThunk(
 			const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
 			const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
 
-
 			const firstDayISO = firstDay.toISOString();
 			const lastDayISO = lastDay.toISOString();
 

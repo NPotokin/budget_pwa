@@ -12,7 +12,7 @@ export type Transaction = Tables<'transactions'>;
 
 interface TransactionState {
 	transactions: Transaction[];
-	currentTransaction: Transaction,
+	currentTransaction: Transaction;
 	loading: boolean;
 	error: string | null;
 }
@@ -97,9 +97,8 @@ const transactionsSlice = createSlice({
 			.addCase(fetchOneTransaction.fulfilled, (state, action) => {
 				state.loading = false;
 				//@ts-expect-error mismatch
-				state.currentTransaction = action.payload
-				}
-			)
+				state.currentTransaction = action.payload;
+			})
 			.addCase(fetchOneTransaction.rejected, (state, action) => {
 				state.loading = false;
 				state.error = action.error.message || 'Failed to delete transaction';

@@ -3,7 +3,7 @@ import Title from '@/components/ui/title';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useTypedSelector } from '@/hooks/useTypedSelector';
 import { fetchCategoriesThisMonth } from '@/store/categories/categories.Thunk';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CategoryCard } from './CategoryCard';
 import { AccountCardSkeleton } from '../Accounts/AccountCardSkeleton';
@@ -11,41 +11,44 @@ import { AccountCardSkeleton } from '../Accounts/AccountCardSkeleton';
 const Categories: React.FC = () => {
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
-	const categories = useTypedSelector((state) => state.categories);
-	const [selectedDate] = useState(new Date());
-	
+	const { categories, loading, error } = useTypedSelector((state) => state.categories);
 
+	// Fetch categories only if not already loaded or if the list is empty
 	useEffect(() => {
-		dispatch(fetchCategoriesThisMonth())
-	}, [dispatch, selectedDate]);
-
-	if (categories.error || categories.loading) {
-		return (
-			<div className="flex flex-col space-y-2">
-				<Title name="Categories" />
-				<AccountCardSkeleton />
-				<AccountCardSkeleton />
-				<AccountCardSkeleton />
-			</div>
-		);
-	}
+		if (!loading && !error && categories.length === 0) {
+			dispatch(fetchCategoriesThisMonth());
+		}
+	}, [dispatch, categories.length, loading, error]);
 
 	return (
 		<div className="flex flex-col">
 			<Title name="Categories" />
 
-			<div className="overflow-auto space-y-1 h-[64vh]">
-				{categories.categories.map((category) => (
-					<CategoryCard key={category.id} category={category} />
-				))}
-			</div>
+			{/* Loading State */}
+			{loading ? (
+				<>
+					<AccountCardSkeleton />
+					<AccountCardSkeleton />
+					<AccountCardSkeleton />
+				</>
+			) : error ? (
+				<p className="text-red-500 text-center py-4">
+					Failed to load categories.
+					<Button variant="link" onClick={() => dispatch(fetchCategoriesThisMonth())}>
+						Retry
+					</Button>
+				</p>
+			) : categories.length === 0 ? (
+				<p className="text-gray-500 text-center py-4">No categories found.</p>
+			) : (
+				<div className="overflow-auto space-y-1 h-[64vh]">
+					{categories.map((category) => (
+						<CategoryCard key={category.id} category={category} />
+					))}
+				</div>
+			)}
 
-			<Button
-				type={'button'}
-				variant={'default'}
-				className="mx-4 p-6"
-				onClick={() => navigate('/categories/add')}
-			>
+			<Button type="button" variant="default" className="mx-4 p-6" onClick={() => navigate('/categories/add')}>
 				Add Category
 			</Button>
 		</div>

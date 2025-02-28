@@ -29,7 +29,7 @@ export const TransactionOverview: React.FC = () => {
 
 	useEffect(() => {
 		dispatch(fetchOneTransaction(transactionId!));
-	}, [dispatch,transactionId]);
+	}, [dispatch, transactionId]);
 
 	const amountForm = useForm<{ amount: number }>({
 		resolver: zodResolver(

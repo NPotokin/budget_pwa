@@ -55,11 +55,9 @@ export const fetchAccountsThisMonth = createAsyncThunk(
 	'accounts/fetchAccountsThisMonth',
 	async (_, { rejectWithValue }) => {
 		try {
-
 			const now = new Date();
 			const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
 			const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
-
 
 			const firstDayISO = firstDay.toISOString();
 			const lastDayISO = lastDay.toISOString();
@@ -102,7 +100,6 @@ export const fetchAccountsThisMonth = createAsyncThunk(
 		}
 	}
 );
-
 
 export const createAccount = createAsyncThunk<Account, Account>('accounts/createAccount', async (account: Account) => {
 	const { data, error } = await supabase.from('accounts').insert([account]).select().single();
