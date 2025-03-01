@@ -8,7 +8,7 @@ export default defineConfig({
 		react(),
 		VitePWA({
 			registerType: 'autoUpdate',
-			includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+			includeAssets: ['favicon-196.png', 'apple-icon-180.png', 'manifest-icon-192.maskable.png', 'apple-splash-640-1136.jpg'],
 			manifest: {
 				name: 'NP Budget',
 				short_name: 'NP Budget',
@@ -17,12 +17,12 @@ export default defineConfig({
 				theme_color: '#ffffff',
 				icons: [
 					{
-						src: 'NP-Budget-192x192.png',
+						src: 'manifest-icon-192.maskable.png',
 						sizes: '192x192',
 						type: 'image/png',
 					},
 					{
-						src: 'NP-Budget-512x512.png',
+						src: 'manifest-icon-512.maskable.png',
 						sizes: '512x512',
 						type: 'image/png',
 					},
