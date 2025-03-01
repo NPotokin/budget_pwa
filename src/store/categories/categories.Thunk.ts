@@ -6,7 +6,6 @@ export const fetchCategories = createAsyncThunk(
 	'categories/fetchCategories',
 	async ({ month, year }: { month: number; year: number }, { rejectWithValue }) => {
 		try {
-			console.log(`Fetching categories for ${month}/${year}`); // Debugging log
 
 			const firstDay = new Date(year, month - 1, 1);
 			const lastDay = new Date(year, month, 0, 23, 59, 59);
